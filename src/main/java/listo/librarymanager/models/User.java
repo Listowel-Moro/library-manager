@@ -1,12 +1,14 @@
 package listo.librarymanager.models;
 
 public abstract class User {
-    String name,  phone, password;
+    int id;
+    String name,  phone;
     boolean isStaff;
 
-    public User(String name, String phone, String password){
+    public User(int id, String name, String phone){
         this.name = name;
         this.phone = phone;
+        this.id = id;
     }
 
     public abstract User registerUser();

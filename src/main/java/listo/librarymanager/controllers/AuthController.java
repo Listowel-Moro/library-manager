@@ -9,6 +9,10 @@ import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
 import listo.librarymanager.config.DatabaseConnection;
+import listo.librarymanager.models.Patron;
+import listo.librarymanager.models.Staff;
+import listo.librarymanager.utils.NavigationManager;
+import listo.librarymanager.utils.SessionManager;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.io.IOException;
@@ -41,8 +45,8 @@ public class AuthController {
     @FXML
     private Button signupButton;
 
-  @FXML
-  public void onPatronRegisterButtonClick() {
+    @FXML
+    public void onPatronRegisterButtonClick() {
         String username = usernameField.getText();
         String phone = phoneField.getText();
         String password = passwordField.getText();
@@ -65,15 +69,15 @@ public class AuthController {
         if (isRegisterSuccessful) {
             messageLabel.setStyle("-fx-text-fill: green;");
             messageLabel.setText("Signup successful! Please log in.");
-            navigateToPatronDashboard();
+            onNavigateToPatronLoginClick();
 
         } else {
             messageLabel.setText("Signup failed! Username may already exist.");
         }
     }
 
-@FXML
-public void onPatronLoginButtonClick() {
+    @FXML
+    public void onPatronLoginButtonClick() {
     String username = usernameField.getText();
     String password = passwordField.getText();
 
@@ -83,7 +87,7 @@ public void onPatronLoginButtonClick() {
     }
 
     try (Connection connection = connectDatabase()) {
-        String query = "SELECT password FROM patrons WHERE name = ?";
+        String query = "SELECT * FROM patrons WHERE name = ?";
         PreparedStatement preparedStatement = connection.prepareStatement(query);
         preparedStatement.setString(1, username);
 
@@ -96,6 +100,15 @@ public void onPatronLoginButtonClick() {
                 messageLabel.setStyle("-fx-text-fill: green;");
                 messageLabel.setText("Login successful!");
 
+                Patron loggedInPatron = new Patron(
+                        resultSet.getInt("id"),
+                        resultSet.getString("name"),
+                        resultSet.getString("phone"),
+                        false
+                );
+
+                // Store in session
+                SessionManager.setCurrentUser(loggedInPatron);
                 navigateToPatronDashboard();
             } else {
                 messageLabel.setText("Login failed! Incorrect password.");
@@ -108,7 +121,6 @@ public void onPatronLoginButtonClick() {
         messageLabel.setText("An error occurred. Please try again.");
     }
 }
-
 
     private boolean savePatron(String username, String phone, String password) {
         // Define the SQL query
@@ -131,22 +143,22 @@ public void onPatronLoginButtonClick() {
         }
     }
 
-
     @FXML
     public void onNavigateToPatronRegisterClick(){
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/listo/librarymanager/patron-register.fxml"));
-            Parent root = loader.load();
-            Stage stage = new Stage();
-            stage.setWidth(800);
-            stage.setHeight(600);
-            stage.setTitle("Patron Register");
-            stage.setScene(new Scene(root));
-            stage.show();
+//            FXMLLoader loader = new FXMLLoader(getClass().getResource("/listo/librarymanager/patron-register.fxml"));
+//            Parent root = loader.load();
+//            Stage stage = new Stage();
+//            stage.setWidth(800);
+//            stage.setHeight(600);
+//            stage.setTitle("Patron Register");
+//            stage.setScene(new Scene(root));
+//            stage.show();
 
             // Close the current login screen (if necessary)
-            Stage currentStage = (Stage) root.getScene().getWindow();
+            //Stage currentStage = (Stage) root.getScene().getWindow();
             //currentStage.close();
+            NavigationManager.navigateTo("/listo/librarymanager/patron-register.fxml");
         } catch (Exception e) {
             System.out.println("Failed to navigate to patron register page" + e);
             //showError("Failed to navigate to Staff Login page.");
@@ -156,18 +168,19 @@ public void onPatronLoginButtonClick() {
     @FXML
     public void onNavigateToPatronLoginClick() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/listo/librarymanager/patron-login.fxml"));
-            Parent root = loader.load();
-            Stage stage = new Stage();
-            stage.setWidth(800);
-            stage.setHeight(600);
-            stage.setTitle("Patron Login");
-            stage.setScene(new Scene(root));
-            stage.show();
+//            FXMLLoader loader = new FXMLLoader(getClass().getResource("/listo/librarymanager/patron-login.fxml"));
+//            Parent root = loader.load();
+//            Stage stage = new Stage();
+//            stage.setWidth(800);
+//            stage.setHeight(600);
+//            stage.setTitle("Patron Login");
+//            stage.setScene(new Scene(root));
+//            stage.show();
 
             // Close the current login screen (if necessary)
-            Stage currentStage = (Stage) root.getScene().getWindow();
+            //Stage currentStage = (Stage) root.getScene().getWindow();
             //currentStage.close();
+            NavigationManager.navigateTo("/listo/librarymanager/patron-login.fxml");
         } catch (Exception e) {
             System.out.println("Failed to navigate to patron login page" + e);
             //showError("Failed to navigate to Patron Login page.");
@@ -177,18 +190,19 @@ public void onPatronLoginButtonClick() {
     @FXML
     public void onNavigateToStaffLoginClick() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/listo/librarymanager/staff-login.fxml"));
-            Parent root = loader.load();
-            Stage stage = new Stage();
-            stage.setWidth(800);
-            stage.setHeight(600);
-            stage.setTitle("Staff Login");
-            stage.setScene(new Scene(root));
-            stage.show();
+//            FXMLLoader loader = new FXMLLoader(getClass().getResource("/listo/librarymanager/staff-login.fxml"));
+//            Parent root = loader.load();
+//            Stage stage = new Stage();
+//            stage.setWidth(800);
+//            stage.setHeight(600);
+//            stage.setTitle("Staff Login");
+//            stage.setScene(new Scene(root));
+//            stage.show();
 
             // Close the current login screen (if necessary)
-            Stage currentStage = (Stage) root.getScene().getWindow();
+            //Stage currentStage = (Stage) root.getScene().getWindow();
             //currentStage.close();
+            NavigationManager.navigateTo("/listo/librarymanager/staff-login.fxml");
         } catch (Exception e) {
             System.out.println("Failed to navigate to staff login page" + e);
             //showError("Failed to navigate to Staff Login page.");
@@ -199,21 +213,22 @@ public void onPatronLoginButtonClick() {
     private void navigateToPatronDashboard() {
         try {
             // Load the dashboard FXML
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/listo/librarymanager/patron-dashboard.fxml"));
-            Parent root = loader.load();
+//            FXMLLoader loader = new FXMLLoader(getClass().getResource("/listo/librarymanager/patron-dashboard.fxml"));
+//            Parent root = loader.load();
 
             // Create a new stage for the dashboard
-            Stage stage = new Stage();
-            stage.setWidth(800);
-            stage.setHeight(600);
-            stage.setTitle("Patron Dashboard");
-            stage.setScene(new Scene(root));
-            stage.show();
+//            Stage stage = new Stage();
+//            stage.setWidth(800);
+//            stage.setHeight(600);
+//            stage.setTitle("Patron Dashboard");
+//            stage.setScene(new Scene(root));
+//            stage.show();
 
             // Close the current registration window
-            Stage currentStage = (Stage) usernameField.getScene().getWindow();
-            currentStage.close();
-        } catch (IOException e) {
+//            Stage currentStage = (Stage) usernameField.getScene().getWindow();
+//            currentStage.close();
+            NavigationManager.navigateTo("/listo/librarymanager/patron-dashboard.fxml");
+        } catch (Exception e) {
             e.printStackTrace();
             messageLabel.setText("Failed to load the dashboard. Please try again.");
         }
@@ -224,21 +239,22 @@ public void onPatronLoginButtonClick() {
     private void navigateToStaffDashboard() {
         try {
             // Load the dashboard FXML
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/listo/librarymanager/staff-dashboard.fxml"));
-            Parent root = loader.load();
+//            FXMLLoader loader = new FXMLLoader(getClass().getResource("/listo/librarymanager/staff-dashboard.fxml"));
+//            Parent root = loader.load();
 
             // Create a new stage for the dashboard
-            Stage stage = new Stage();
-            stage.setWidth(800);
-            stage.setHeight(600);
-            stage.setTitle("Staff Dashboard");
-            stage.setScene(new Scene(root));
-            stage.show();
+//            Stage stage = new Stage();
+//            stage.setWidth(800);
+//            stage.setHeight(600);
+//            stage.setTitle("Staff Dashboard");
+//            stage.setScene(new Scene(root));
+//            stage.show();
 
             // Close the current registration window
-            Stage currentStage = (Stage) usernameField.getScene().getWindow();
-            currentStage.close();
-        } catch (IOException e) {
+//            Stage currentStage = (Stage) usernameField.getScene().getWindow();
+//            currentStage.close();
+            NavigationManager.navigateTo("/listo/librarymanager/staff-dashboard.fxml");
+        } catch (Exception e) {
             e.printStackTrace();
             messageLabel.setText("Failed to load the dashboard. Please try again.");
         }
@@ -272,41 +288,50 @@ public void onPatronLoginButtonClick() {
 //        }
 //    }
 
-@FXML
-public void onStaffLoginButtonClick() {
-    String username = usernameField.getText();
-    String password = passwordField.getText();
+    @FXML
+    public void onStaffLoginButtonClick() {
+String username = usernameField.getText();
+String password = passwordField.getText();
 
-    if (username.isEmpty() || password.isEmpty()) {
-        messageLabel.setText("All fields are required!");
-        return;
-    }
+if (username.isEmpty() || password.isEmpty()) {
+    messageLabel.setText("All fields are required!");
+    return;
+}
 
-    try (Connection connection = connectDatabase()) {
-        String query = "SELECT password FROM staff WHERE name = ? AND isStaff = TRUE";
-        PreparedStatement preparedStatement = connection.prepareStatement(query);
-        preparedStatement.setString(1, username);
+try (Connection connection = connectDatabase()) {
+    String query = "SELECT * FROM staff WHERE name = ? AND isStaff = TRUE";
+    PreparedStatement preparedStatement = connection.prepareStatement(query);
+    preparedStatement.setString(1, username);
 
-        ResultSet resultSet = preparedStatement.executeQuery();
+    ResultSet resultSet = preparedStatement.executeQuery();
 
-        if (resultSet.next()) {
-            String storedHashedPassword = resultSet.getString("password");
+    if (resultSet.next()) {
+        String storedHashedPassword = resultSet.getString("password");
 
-            if (storedHashedPassword.equals(password)) {
-                messageLabel.setStyle("-fx-text-fill: green;");
-                messageLabel.setText("Login successful!");
+        if (storedHashedPassword.equals(password)) {
+            messageLabel.setStyle("-fx-text-fill: green;");
+            messageLabel.setText("Login successful!");
 
-                navigateToStaffDashboard();
-            } else {
-                messageLabel.setText("Login failed! Incorrect password.");
-            }
+            Staff loggedInStaff = new Staff(
+                    resultSet.getInt("id"),
+                    resultSet.getString("name"),
+                    resultSet.getString("phone"),
+                    true
+            );
+
+            SessionManager.setCurrentUser(loggedInStaff);
+
+            navigateToStaffDashboard();
         } else {
-            messageLabel.setText("Login failed! Staff not found.");
+            messageLabel.setText("Login failed! Incorrect password.");
         }
-    } catch (SQLException e) {
-        e.printStackTrace();
-        messageLabel.setText("An error occurred. Please try again.");
+    } else {
+        messageLabel.setText("Login failed! Staff not found.");
     }
+} catch (SQLException e) {
+    e.printStackTrace();
+    messageLabel.setText("An error occurred. Please try again.");
+}
 }
 
     private void showError(String message) {

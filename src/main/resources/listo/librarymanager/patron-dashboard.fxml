@@ -20,6 +20,7 @@
                         <TableColumn text="Genre" fx:id="genreColumn" />
                         <TableColumn text="Status" fx:id="statusColumn" />
                         <TableColumn text="ISBN" fx:id="isbnColumn" />
+                        <TableColumn text="Link To Reserve" fx:id="reservationLinkColumn" />
                     </columns>
                 </TableView>
             </VBox>
@@ -35,15 +36,22 @@
         <Tab text="Reservations">
             <VBox spacing="10">
                 <Label text="Your Reservations" style="-fx-font-size: 18;" />
-                <!--                <Label fx:id="accountName" />-->
-                <!--                <Label fx:id="accountPhone" />-->
+                <TableView fx:id="reservationsTable" prefHeight="400">
+                    <columns>
+                        <TableColumn text="Reservation ID" fx:id="reservationIdColumn" />
+                        <TableColumn text="Book Title" fx:id="bookTitleColumn" />
+                        <TableColumn text="Reservation Date" fx:id="reservationDateColumn" />
+                    </columns>
+                </TableView>
             </VBox>
         </Tab>
+
         <Tab text="Profile">
             <VBox spacing="10">
                 <Label text="Profile Details:" style="-fx-font-size: 18;" />
                 <Label fx:id="accountName" />
                 <Label fx:id="accountPhone" />
+                <Button text="Logout" onAction="#patronLogout"/>
             </VBox>
         </Tab>
     </TabPane>

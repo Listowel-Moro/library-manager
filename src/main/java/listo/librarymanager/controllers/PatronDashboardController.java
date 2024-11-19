@@ -5,17 +5,20 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.text.Text;
 import listo.librarymanager.config.DatabaseConnection;
 import listo.librarymanager.models.Book;
 import listo.librarymanager.models.Patron;
-import listo.librarymanager.models.User;
+import listo.librarymanager.models.Reservation;
+import listo.librarymanager.utils.NavigationManager;
+import listo.librarymanager.utils.SessionManager;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import javafx.util.Callback;
 
 public class PatronDashboardController {
 
@@ -34,12 +37,12 @@ public class PatronDashboardController {
     private Patron currentUser;
 
     @FXML
-    private TableColumn<Book, String> titleColumn, publisherColumn, genreColumn, statusColumn, isbnColumn;
+    private TableColumn<Book, String> titleColumn, publisherColumn, genreColumn, statusColumn, isbnColumn, reservationLinkColumn;
 
     private final ObservableList<Book> bookList = FXCollections.observableArrayList();
 
     public void initialize() {
-        currentUser = new Patron("Listowel Adolwin", "020-456-7890", "doe123", false);
+        currentUser = (Patron) SessionManager.getCurrentUser();
 
         accountName.setText(currentUser.getName());
         accountPhone.setText(currentUser.getPhone());
@@ -47,11 +50,39 @@ public class PatronDashboardController {
         titleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
         publisherColumn.setCellValueFactory(new PropertyValueFactory<>("publisher"));
         genreColumn.setCellValueFactory(new PropertyValueFactory<>("genre"));
-        statusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
+        //statusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
         isbnColumn.setCellValueFactory(new PropertyValueFactory<>("isbn"));
+        reservationLinkColumn.setCellValueFactory(new PropertyValueFactory<>("isbn"));
+        reservationLinkColumn.setCellFactory(column -> new TableCell<Book, String>() {
+            private final Hyperlink link = new Hyperlink();
 
+            @Override
+            protected void updateItem(String isbn, boolean empty) {
+                super.updateItem(isbn, empty);
+                if (empty || isbn == null) {
+                    setGraphic(null);
+                    setText(null);
+                } else {
+                    link.setText("Reserve book");
+                    link.setOnAction(event -> {
+                        // Handle the reservation logic here
+                        System.out.println("Reserving book with ISBN: " + isbn);
+                        reserveBook(isbn);
+                    });
+                    setGraphic(link);
+                    setText(null);
+               }
+            }
+        });
+
+        // Load reservations table
+        reservationIdColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
+        bookTitleColumn.setCellValueFactory(new PropertyValueFactory<>("bookTitle"));
+        reservationDateColumn.setCellValueFactory(new PropertyValueFactory<Reservation, String>("reservationDate"));
+
+        loadReservations();
         loadBooksFromDatabase();
-        loadBorrowedBooks();
+        //loadBorrowedBooks();
     }
 
     private void loadBooksFromDatabase() {
@@ -66,7 +97,8 @@ public class PatronDashboardController {
                         resultSet.getString("title"),
                         resultSet.getString("publisher"),
                         resultSet.getString("genre"),
-                        resultSet.getString("isbn")
+                        resultSet.getString("isbn"),
+                        resultSet.getInt("copies_left")
                 );
                 bookList.add(book);
             }
@@ -75,6 +107,128 @@ public class PatronDashboardController {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    private void reserveBook(String isbn) {
+        if (isbn == null || isbn.isEmpty()) {
+            showAlert(Alert.AlertType.WARNING, "Invalid Input", "Please provide a valid ISBN.");
+            return;
+        }
+
+        if (currentUser == null) {
+            showAlert(Alert.AlertType.ERROR, "User Not Logged In", "You need to log in to reserve a book.");
+            return;
+        }
+
+        // Fetch the book from the database
+        String fetchBookQuery = "SELECT id, title, copies_left FROM books WHERE isbn = ?";
+        int bookId = -1;
+        int copiesLeft = 0;
+        try (Connection connection = DatabaseConnection.connectDatabase();
+             PreparedStatement fetchBookStmt = connection.prepareStatement(fetchBookQuery)) {
+
+            fetchBookStmt.setString(1, isbn);
+            try (ResultSet resultSet = fetchBookStmt.executeQuery()) {
+                if (resultSet.next()) {
+                    bookId = resultSet.getInt("id");
+                    copiesLeft = resultSet.getInt("copies_left");
+
+                    if (copiesLeft <= 0) {
+                        showAlert(Alert.AlertType.WARNING, "No Copies Available", "This book is currently not available for reservation.");
+                        return;
+                    }
+                } else {
+                    showAlert(Alert.AlertType.ERROR, "Book Not Found", "The book with the provided ISBN does not exist.");
+                    return;
+                }
+            }
+
+        } catch (SQLException e) {
+            showAlert(Alert.AlertType.ERROR, "Database Error", "An error occurred while accessing the database.");
+            e.printStackTrace();
+            return;
+        }
+
+
+        String reserveBookQuery = "INSERT INTO reservations (patron_id, book_id, reservation_date) VALUES (?, ?, CURRENT_TIMESTAMP)";
+        String updateCopiesQuery = "UPDATE books SET copies_left = copies_left - 1 WHERE id = ?";
+        try (Connection connection = DatabaseConnection.connectDatabase();
+             PreparedStatement reserveStmt = connection.prepareStatement(reserveBookQuery);
+             PreparedStatement updateCopiesStmt = connection.prepareStatement(updateCopiesQuery)) {
+
+            connection.setAutoCommit(false); // Start transaction
+
+            // Insert reservation
+            reserveStmt.setInt(1, currentUser.getId());
+            reserveStmt.setInt(2, bookId);
+            reserveStmt.executeUpdate();
+
+            // Update copies left
+            updateCopiesStmt.setInt(1, bookId);
+            updateCopiesStmt.executeUpdate();
+
+            connection.commit(); // Commit transaction
+            showAlert(Alert.AlertType.INFORMATION, "Success", "Book reserved successfully!");
+
+        } catch (SQLException e) {
+            showAlert(Alert.AlertType.ERROR, "Database Error", "An error occurred while reserving the book.");
+            e.printStackTrace();
+        }
+    }
+
+
+    @FXML
+    private TableView<Reservation> reservationsTable;
+    @FXML
+    private TableColumn<Reservation, Integer> reservationIdColumn;
+    @FXML
+    private TableColumn<Reservation, Integer> bookTitleColumn;
+    @FXML
+    private TableColumn<Reservation, String> reservationDateColumn;
+    private void loadReservations() {
+        String fetchReservationsQuery = """
+        SELECT r.id AS reservation_id, b.title AS book_title, r.reservation_date as reservation_date
+        FROM reservations r
+        JOIN books b ON r.book_id = b.id
+        WHERE r.patron_id = ? AND r.has_borrowed = false
+    """;
+
+        ObservableList<Reservation> reservations = FXCollections.observableArrayList();
+
+        try (Connection connection = DatabaseConnection.connectDatabase();
+             PreparedStatement preparedStatement = connection.prepareStatement(fetchReservationsQuery)) {
+
+            preparedStatement.setInt(1, currentUser.getId());
+
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    int reservationId = resultSet.getInt("reservation_id");
+                    String bookTitle = resultSet.getString("book_title");
+                    String reservationDate = resultSet.getString("reservation_date");
+
+//                    LocalDate date = LocalDate.parse(reservationDate);
+//                    String formattedReservationDate = date.format(DateTimeFormatter.ofPattern("MMM dd, yyyy"));
+
+                    reservations.add(new Reservation(reservationId, currentUser.getName(), bookTitle, reservationDate, false));
+                }
+            }
+
+            reservationsTable.setItems(reservations);
+
+        } catch (SQLException e) {
+            showAlert(Alert.AlertType.ERROR, "Database Error", "Failed to load reservations: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+
+    // Utility method to show alerts
+    private void showAlert(Alert.AlertType alertType, String title, String message) {
+        Alert alert = new Alert(alertType);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 
     @FXML
@@ -98,17 +252,16 @@ public class PatronDashboardController {
         searchResultsTable.setItems(filteredList);
     }
 
-    private void loadBorrowedBooks() {
-        // Simulate some data - ideally, you'd fetch from the database
-        List<Book> borrowedBooks = currentUser.getBorrowedBooks();  // Get this from the database
-        borrowedBooksTable.getItems().setAll(borrowedBooks);
-    }
+//    private void loadBorrowedBooks() {
+//        // Simulate some data - ideally, you'd fetch from the database
+//        List<Book> borrowedBooks = currentUser.getBorrowedBooks();  // Get this from the database
+//        borrowedBooksTable.getItems().setAll(borrowedBooks);
+//    }
 
-
-    @FXML
-    private void onViewBorrowedBooksClick() {
-        loadBorrowedBooks();
-    }
+//    @FXML
+//    private void onViewBorrowedBooksClick() {
+//        loadBorrowedBooks();
+//    }
 
     @FXML
     private void onViewProfileClick() {
@@ -116,7 +269,8 @@ public class PatronDashboardController {
     }
 
     @FXML
-    private void onLogoutClick() {
-        // Logic to log out the user and navigate back to the login screen
+    public void patronLogout(){
+        SessionManager.clearSession();
+        NavigationManager.navigateTo("/listo/librarymanager/login-navigator.fxml");
     }
 }

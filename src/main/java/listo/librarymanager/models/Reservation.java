@@ -1,25 +1,39 @@
 package listo.librarymanager.models;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
 public class Reservation {
-    int book_id, patron_id;
-    Boolean has_borrowed;
+    int id;
+    private String bookTitle, reservationDate, patronName;
+    boolean hasBorrowed;
 
-    public Reservation(int book_id, int patron_id){
-        this.book_id = book_id;
-        this.patron_id = patron_id;
-        this.has_borrowed = false;
+    public Reservation(int id, String patronName, String bookTitle, String reservationDate, boolean hasBorrowed){
+        this.id = id;
+        this.bookTitle = bookTitle;
+        this.patronName = patronName;
+        this.reservationDate = reservationDate;
+        this.hasBorrowed = hasBorrowed;
     }
 
-    private void reserveBook(){
-        // check if book is available
-        // if book available, add a new reservation (with book_id)
-        // else add reservation to queue
-        //
+    public int getId() {
+        return id;
     }
 
-    private boolean isBookAvailable(int book_id){
-        // make a request to database to see if book is available
-        return true;
+    public String getPatronName(){
+        return this.patronName;
+    }
+
+    public boolean getHasBorrowed(){
+        return this.hasBorrowed;
+    }
+
+    public String getBookTitle() {
+        return bookTitle;
+    }
+
+    public String getReservationDate() {
+       return  reservationDate;
     }
 
 }

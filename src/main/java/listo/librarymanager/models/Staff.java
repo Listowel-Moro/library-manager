@@ -3,8 +3,8 @@ package listo.librarymanager.models;
 import java.util.List;
 
 public class Staff extends User{
-    public Staff(String name, String phone, String password, boolean isStaff) {
-        super(name, phone, password);
+    public Staff(int id, String name, String phone, boolean isStaff) {
+        super(id, name, phone);
         this.isStaff = true;
     }
 
@@ -31,8 +31,8 @@ public class Staff extends User{
     }
 
     public List<Book> getBorrowedBooks() {
-        return List.of(new Book("Borrowed Book 1", "Author 1", "commedy", "1234"), new Book("Borrowed Book 2", "Author 2", "commedy", "1234"));
-
+        //return List.of(new Book("Borrowed Book 1", "Author 1", "commedy", "1234"), new Book("Borrowed Book 2", "Author 2", "commedy", "1234"));
+        return null;
     }
 }
 
