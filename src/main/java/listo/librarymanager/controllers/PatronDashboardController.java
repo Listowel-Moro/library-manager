@@ -7,6 +7,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import listo.librarymanager.config.DatabaseConnection;
 import listo.librarymanager.models.Book;
+import listo.librarymanager.models.Borrowing;
 import listo.librarymanager.models.Patron;
 import listo.librarymanager.models.Reservation;
 import listo.librarymanager.utils.NavigationManager;
@@ -23,7 +24,7 @@ import javafx.util.Callback;
 public class PatronDashboardController {
 
     @FXML
-    private TableView<Book> borrowedBooksTable, searchResultsTable;
+    private TableView<Book> searchResultsTable;
 
     @FXML
     private TextField searchField;
@@ -80,9 +81,15 @@ public class PatronDashboardController {
         bookTitleColumn.setCellValueFactory(new PropertyValueFactory<>("bookTitle"));
         reservationDateColumn.setCellValueFactory(new PropertyValueFactory<Reservation, String>("reservationDate"));
 
+        borrowingIdColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
+        borrowedBookTitleColumn.setCellValueFactory(new PropertyValueFactory<>("bookTitle"));
+        borrowedPatronNameColumn.setCellValueFactory(new PropertyValueFactory<>("patronName"));
+        borrowedDateColumn.setCellValueFactory(new PropertyValueFactory<>("borrowedDate"));
+        dueDateColumn.setCellValueFactory(new PropertyValueFactory<>("dueDate"));
+
+        loadBorrowedBooks();
         loadReservations();
         loadBooksFromDatabase();
-        //loadBorrowedBooks();
     }
 
     private void loadBooksFromDatabase() {
@@ -156,20 +163,18 @@ public class PatronDashboardController {
              PreparedStatement reserveStmt = connection.prepareStatement(reserveBookQuery);
              PreparedStatement updateCopiesStmt = connection.prepareStatement(updateCopiesQuery)) {
 
-            connection.setAutoCommit(false); // Start transaction
+            connection.setAutoCommit(false);
 
-            // Insert reservation
             reserveStmt.setInt(1, currentUser.getId());
             reserveStmt.setInt(2, bookId);
             reserveStmt.executeUpdate();
 
-            // Update copies left
             updateCopiesStmt.setInt(1, bookId);
             updateCopiesStmt.executeUpdate();
 
-            connection.commit(); // Commit transaction
+            connection.commit();
             showAlert(Alert.AlertType.INFORMATION, "Success", "Book reserved successfully!");
-
+            initialize();
         } catch (SQLException e) {
             showAlert(Alert.AlertType.ERROR, "Database Error", "An error occurred while reserving the book.");
             e.printStackTrace();
@@ -252,21 +257,89 @@ public class PatronDashboardController {
         searchResultsTable.setItems(filteredList);
     }
 
-//    private void loadBorrowedBooks() {
-//        // Simulate some data - ideally, you'd fetch from the database
-//        List<Book> borrowedBooks = currentUser.getBorrowedBooks();  // Get this from the database
-//        borrowedBooksTable.getItems().setAll(borrowedBooks);
-//    }
-
-//    @FXML
-//    private void onViewBorrowedBooksClick() {
-//        loadBorrowedBooks();
-//    }
+    @FXML
+    private TableView<Borrowing> borrowedBooksTable;
 
     @FXML
-    private void onViewProfileClick() {
-        // Display user profile information
+    private TableColumn<Borrowing, Integer> borrowingIdColumn;
+
+    @FXML
+    private TableColumn<Borrowing, String> borrowedBookTitleColumn;
+
+    @FXML
+    private TableColumn<Borrowing, String> borrowedPatronNameColumn;
+
+    @FXML
+    private TableColumn<Borrowing, String> borrowedDateColumn;
+
+    @FXML
+    private TableColumn<Borrowing, String> dueDateColumn;
+    @FXML
+    private final  ObservableList<Borrowing> borrowedBooks = FXCollections.observableArrayList();
+    private void loadBorrowedBooks() {
+        String query = """
+        SELECT b.id AS borrowing_id, bk.title AS book_title,
+               p.name AS patron_name, b.borrowed_date, b.due_date
+        FROM borrowing b
+        JOIN books bk ON b.book_id = bk.id
+        JOIN patrons p ON b.patron_id = p.id
+        WHERE p.id = ? AND b.is_returned = false
+    """;
+
+        if (currentUser == null || currentUser.getId() <= 0) {
+            showAlert(Alert.AlertType.ERROR, "Error", "Invalid user session.");
+            return;
+        }
+
+        borrowedBooks.clear();
+        try (Connection connection = DatabaseConnection.connectDatabase();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+            preparedStatement.setInt(1, currentUser.getId());
+
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    int id = resultSet.getInt("borrowing_id");
+                    String bookTitle = resultSet.getString("book_title");
+                    String patronName = resultSet.getString("patron_name");
+                    String borrowedDate = resultSet.getString("borrowed_date");
+                    String dueDate = resultSet.getString("due_date");
+
+                    borrowedBooks.add(new Borrowing(id, patronName, bookTitle, borrowedDate, dueDate));
+                }
+            }
+
+            borrowedBooksTable.setItems(borrowedBooks);
+
+        } catch (SQLException e) {
+            showAlert(Alert.AlertType.ERROR, "Database Error", "Failed to load borrowed books: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
+
+    @FXML
+    private TextField searchBorrowedBooksField;
+    @FXML
+    private void onSearchBorrowedBooksClick() {
+        String searchQuery = searchBorrowedBooksField.getText().trim().toLowerCase();
+
+        if (searchQuery.isEmpty()) {
+            borrowedBooksTable.setItems(borrowedBooks);
+            return;
+        }
+
+        ObservableList<Borrowing> filteredList = FXCollections.observableArrayList();
+        for (Borrowing borrowing : borrowedBooks) {
+            if (borrowing.getBookTitle().toLowerCase().contains(searchQuery) ||
+                    borrowing.getPatronName().toLowerCase().contains(searchQuery) ||
+                    borrowing.getBorrowedDate().toLowerCase().contains(searchQuery) ||
+                    borrowing.getDueDate().toLowerCase().contains(searchQuery)) {
+                filteredList.add(borrowing);
+            }
+        }
+        borrowedBooksTable.setItems(filteredList);
+    }
+
 
     @FXML
     public void patronLogout(){

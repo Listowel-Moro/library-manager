@@ -6,15 +6,14 @@ import java.time.format.DateTimeFormatter;
 public class Borrowing {
     private int id;
     private boolean isReturned;
-    private String bookTitle, borrowedDate, returnDate, patronName;
+    private String bookTitle, borrowedDate, dueDate, patronName;
 
-    public Borrowing(int id, String patronName, String bookTitle, String borrowedDate, String returnDate, boolean isReturned){
+    public Borrowing(int id, String patronName, String bookTitle, String borrowedDate, String dueDate){
         this.id = id;
         this.bookTitle = bookTitle;
         this.patronName = patronName;
         this.borrowedDate = borrowedDate;
-        this.returnDate = returnDate;
-        this.isReturned = isReturned;
+        this.dueDate = dueDate;
     }
 
     public int getId() {
@@ -25,10 +24,6 @@ public class Borrowing {
         return this.patronName;
     }
 
-    public boolean isReturned(){
-        return this.isReturned;
-    }
-
     public String getBookTitle() {
         return bookTitle;
     }
@@ -37,8 +32,8 @@ public class Borrowing {
         return  borrowedDate;
     }
 
-    public String getReturnDate() {
-        return  returnDate;
+    public String getDueDate() {
+        return  dueDate;
     }
 
 }

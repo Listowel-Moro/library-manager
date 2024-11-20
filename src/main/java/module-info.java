@@ -8,6 +8,7 @@ module listo.librarymanager {
     requires org.kordamp.bootstrapfx.core;
     requires java.sql;
     requires jbcrypt;
+    requires java.desktop;
 
     opens listo.librarymanager to javafx.fxml;
     opens listo.librarymanager.controllers to javafx.fxml;

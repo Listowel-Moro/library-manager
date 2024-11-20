@@ -10,13 +10,12 @@
         <Tab text="Search Books">
             <VBox spacing="10">
                 <TextField fx:id="searchField" promptText="Search for books..."/>
-                <Button text="Search" onAction="#onSearchClick" />
+                <Button text="Search" onAction="#onSearchBooksClick" />
                 <TableView fx:id="searchResultsTable">
                     <columns>
                         <TableColumn text="Title" fx:id="titleColumn" />
                         <TableColumn text="Publisher" fx:id="publisherColumn" />
                         <TableColumn text="Genre" fx:id="genreColumn" />
-<!--                        <TableColumn text="Status" fx:id="statusColumn" />-->
                         <TableColumn text="ISBN" fx:id="isbnColumn" />
                         <TableColumn text="Copies Left" fx:id="copiesLeftColumn" style="-fx-alignment: center;" />
                     </columns>
@@ -25,12 +24,21 @@
         </Tab>
         <Tab text="Borrowed Books">
             <VBox spacing="10">
-                <Label text="Your Borrowed Books:" style="-fx-font-size: 18; -fx-padding: 20 0 20 0;" />
+                <Label text="Borrowed Books:" style="-fx-font-size: 18;" />
+                <TextField fx:id="searchBorrowedBooksField" promptText="Search borrowed books..."/>
+                <Button text="Search" onAction="#onSearchBorrowedBooksClick" />
                 <TableView fx:id="borrowedBooksTable">
-                    <!-- Define columns here -->
+                    <columns>
+                        <TableColumn text="Borrowing ID" fx:id="borrowingIdColumn" />
+                        <TableColumn text="Book Title" fx:id="borrowedBookTitleColumn" />
+                        <TableColumn text="Patron Name" fx:id="borrowedPatronNameColumn" />
+                        <TableColumn text="Borrowed Date" fx:id="borrowedDateColumn" />
+                        <TableColumn text="Due Date" fx:id="dueDateColumn" />
+                    </columns>
                 </TableView>
             </VBox>
         </Tab>
+
         <Tab text="Add Book">
             <VBox spacing="20">
                 <Label text="Book Details:" style="-fx-font-size: 18; -fx-padding: 20 0 20 0;" />

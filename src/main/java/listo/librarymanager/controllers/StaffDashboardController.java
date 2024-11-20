@@ -5,24 +5,24 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 import listo.librarymanager.config.DatabaseConnection;
-import listo.librarymanager.models.Book;
-import listo.librarymanager.models.Reservation;
-import listo.librarymanager.models.Staff;
-import listo.librarymanager.models.User;
+import listo.librarymanager.models.*;
 import listo.librarymanager.utils.NavigationManager;
 import listo.librarymanager.utils.SessionManager;
 
+import java.awt.*;
 import java.sql.*;
 import java.util.List;
 
 public class StaffDashboardController {
 
     @FXML
-    private TableView<Book> borrowedBooksTable, searchResultsTable;
+    private TableView<Book> searchResultsTable;
 
     @FXML
     private TextField searchField;
@@ -75,7 +75,13 @@ public class StaffDashboardController {
             }
         });
 
+        borrowingIdColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
+        borrowedBookTitleColumn.setCellValueFactory(new PropertyValueFactory<>("bookTitle"));
+        borrowedPatronNameColumn.setCellValueFactory(new PropertyValueFactory<>("patronName"));
+        borrowedDateColumn.setCellValueFactory(new PropertyValueFactory<>("borrowedDate"));
+        dueDateColumn.setCellValueFactory(new PropertyValueFactory<>("dueDate"));
 
+        loadBorrowedBooks();
         loadBooksFromDatabase();
         loadPendingReservations();
     }
@@ -97,7 +103,7 @@ public class StaffDashboardController {
                 );
                 bookList.add(book);
             }
-            searchResultsTable.setItems(bookList); // Set items in the TableView
+            searchResultsTable.setItems(bookList);
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -105,7 +111,7 @@ public class StaffDashboardController {
     }
 
     @FXML
-    private void onSearchClick() {
+    private void onSearchBooksClick() {
         loadBooksFromDatabase();
         String searchQuery = searchField.getText().trim().toLowerCase();
 
@@ -212,9 +218,6 @@ public class StaffDashboardController {
     @FXML
     private TableColumn<Reservation, Integer> approveColumn;
 
-    @FXML
-    private TableColumn<Reservation, Void> actionColumn;
-
     private void loadPendingReservations() {
         String fetchReservationsQuery = """
         SELECT r.id AS reservation_id, p.name AS patron_name, b.title AS book_title,
@@ -309,7 +312,7 @@ public class StaffDashboardController {
             int rowsAffected = statement.executeUpdate();
 
             if (rowsAffected > 0) {
-                showAlert(Alert.AlertType.INFORMATION, "Success", "Reservation approved successfully!");
+                //showAlert(Alert.AlertType.INFORMATION, "Success", "Reservation approved successfully!");
                 initialize();
                 //loadReservations();
             } else {
@@ -322,41 +325,79 @@ public class StaffDashboardController {
         }
     }
 
-    private void handleApproval(int reservationId, int patronId, int bookId) {
-        String updateReservationQuery = """
-        UPDATE reservations
-        SET has_borrowed = true, status = 'Approved'
-        WHERE id = ?
+    @FXML
+    private TableView<Borrowing> borrowedBooksTable;
+
+    @FXML
+    private TableColumn<Borrowing, Integer> borrowingIdColumn;
+
+    @FXML
+    private TableColumn<Borrowing, String> borrowedBookTitleColumn;
+
+    @FXML
+    private TableColumn<Borrowing, String> borrowedPatronNameColumn;
+
+    @FXML
+    private TableColumn<Borrowing, String> borrowedDateColumn;
+
+    @FXML
+    private TableColumn<Borrowing, String> dueDateColumn;
+    @FXML
+    private final  ObservableList<Borrowing> borrowedBooks = FXCollections.observableArrayList();
+    private void loadBorrowedBooks() {
+        String query = """
+        SELECT b.id AS borrowing_id, bk.title AS book_title,
+               p.name AS patron_name, b.borrowed_date, b.due_date
+        FROM borrowing b
+        JOIN books bk ON b.book_id = bk.id
+        JOIN patrons p ON b.patron_id = p.id
+        WHERE b.is_returned = false
     """;
-
-        String addToBorrowingQuery = """
-        INSERT INTO borrowing (patron_id, book_id, due_date)
-        VALUES (?, ?, CURRENT_TIMESTAMP + INTERVAL 14 DAY)
-    """;
-
-
-    }
-
-
-    private void handleDecline(Reservation reservation) {
-        String updateReservationQuery = "UPDATE reservations SET status = false WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.connectDatabase();
-             PreparedStatement preparedStatement = connection.prepareStatement(updateReservationQuery)) {
+             PreparedStatement preparedStatement = connection.prepareStatement(query);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
 
-            preparedStatement.setInt(1, reservation.getId());
-            preparedStatement.executeUpdate();
+            while (resultSet.next()) {
+                int id = resultSet.getInt("borrowing_id");
+                String bookTitle = resultSet.getString("book_title");
+                String patronName = resultSet.getString("patron_name");
+                String borrowedDate = resultSet.getString("borrowed_date");
+                String dueDate = resultSet.getString("due_date");
 
-            showAlert(Alert.AlertType.INFORMATION, "Success", "Reservation declined successfully!");
-            loadPendingReservations(); // Refresh table
+                borrowedBooks.add(new Borrowing(id, patronName, bookTitle, borrowedDate, dueDate));
+            }
+
+            borrowedBooksTable.setItems(borrowedBooks);
 
         } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Database Error", "Failed to decline reservation: " + e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Database Error", "Failed to load borrowed books: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
+    @FXML
+    private TextField searchBorrowedBooksField;
+    @FXML
+    private void onSearchBorrowedBooksClick() {
+        String searchQuery = searchBorrowedBooksField.getText().trim().toLowerCase();
 
+        if (searchQuery.isEmpty()) {
+            borrowedBooksTable.setItems(borrowedBooks);
+            return;
+        }
+
+        ObservableList<Borrowing> filteredList = FXCollections.observableArrayList();
+        for (Borrowing borrowing : borrowedBooks) {
+            if (borrowing.getBookTitle().toLowerCase().contains(searchQuery) ||
+                    borrowing.getPatronName().toLowerCase().contains(searchQuery) ||
+                    borrowing.getBorrowedDate().toLowerCase().contains(searchQuery) ||
+                    borrowing.getDueDate().toLowerCase().contains(searchQuery)) {
+                filteredList.add(borrowing);
+            }
+        }
+        borrowedBooksTable.setItems(filteredList);
+    }
 
     private void showAlert(Alert.AlertType alertType, String title, String message) {
         Alert alert = new Alert(alertType);

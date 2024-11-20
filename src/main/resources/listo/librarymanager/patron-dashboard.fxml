@@ -18,7 +18,6 @@
                         <TableColumn text="Title" fx:id="titleColumn" />
                         <TableColumn text="Publisher" fx:id="publisherColumn" />
                         <TableColumn text="Genre" fx:id="genreColumn" />
-                        <TableColumn text="Status" fx:id="statusColumn" />
                         <TableColumn text="ISBN" fx:id="isbnColumn" />
                         <TableColumn text="Link To Reserve" fx:id="reservationLinkColumn" />
                     </columns>
@@ -27,16 +26,24 @@
         </Tab>
         <Tab text="Borrowed Books">
             <VBox spacing="10">
-                <Label text="Your Borrowed Books:" style="-fx-font-size: 18;" />
+                <Label text="Borrowed Books:" style="-fx-font-size: 18; -fx-padding: 10 0 5 0;" />
+                <TextField fx:id="searchBorrowedBooksField" promptText="Search borrowed books..."/>
+                <Button text="Search" onAction="#onSearchBorrowedBooksClick" />
                 <TableView fx:id="borrowedBooksTable">
-                    <!-- Define columns here -->
+                    <columns>
+                        <TableColumn text="Borrowing ID" fx:id="borrowingIdColumn" />
+                        <TableColumn text="Book Title" fx:id="borrowedBookTitleColumn" />
+                        <TableColumn text="Patron Name" fx:id="borrowedPatronNameColumn" />
+                        <TableColumn text="Borrowed Date" fx:id="borrowedDateColumn" />
+                        <TableColumn text="Due Date" fx:id="dueDateColumn" />
+                    </columns>
                 </TableView>
             </VBox>
         </Tab>
         <Tab text="Reservations">
             <VBox spacing="10">
-                <Label text="Your Reservations" style="-fx-font-size: 18;" />
-                <TableView fx:id="reservationsTable" prefHeight="400">
+                <Label text="Your Reservations" style="-fx-font-size: 18; -fx-padding: 10 0 5 0;" />
+                <TableView fx:id="reservationsTable">
                     <columns>
                         <TableColumn text="Reservation ID" fx:id="reservationIdColumn" />
                         <TableColumn text="Book Title" fx:id="bookTitleColumn" />
@@ -45,10 +52,9 @@
                 </TableView>
             </VBox>
         </Tab>
-
         <Tab text="Profile">
             <VBox spacing="10">
-                <Label text="Profile Details:" style="-fx-font-size: 18;" />
+                <Label text="Profile Details:"  style="-fx-font-size: 18; -fx-padding: 10 0 5 0;" />
                 <Label fx:id="accountName" />
                 <Label fx:id="accountPhone" />
                 <Button text="Logout" onAction="#patronLogout"/>
