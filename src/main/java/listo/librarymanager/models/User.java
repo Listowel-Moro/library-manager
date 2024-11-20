@@ -14,4 +14,3 @@ public abstract class User {
     public abstract User registerUser();
     public  abstract User loginUser();
 }
-

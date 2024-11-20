@@ -34,11 +34,11 @@
                         <TableColumn text="Patron Name" fx:id="borrowedPatronNameColumn" />
                         <TableColumn text="Borrowed Date" fx:id="borrowedDateColumn" />
                         <TableColumn text="Due Date" fx:id="dueDateColumn" />
+                        <TableColumn text="Check In" fx:id="checkInColumn" />
                     </columns>
                 </TableView>
             </VBox>
         </Tab>
-
         <Tab text="Add Book">
             <VBox spacing="20">
                 <Label text="Book Details:" style="-fx-font-size: 18; -fx-padding: 20 0 20 0;" />
@@ -64,13 +64,12 @@
                         <TableColumn text="Patron Name" fx:id="patronNameColumn" />
                         <TableColumn text="Book Title" fx:id="bookTitleColumn" />
                         <TableColumn text="Reservation Date" fx:id="reservationDateColumn" />
-                        <TableColumn text="Has Borrowed" fx:id="hasBorrowedColumn" />
+                        <TableColumn text="Status" fx:id="statusColumn" />
                         <TableColumn text="Approve" fx:id="approveColumn" />
                     </columns>
                 </TableView>
             </VBox>
         </Tab>
-
         <Tab text="Profile">
             <VBox spacing="10">
                 <Label text="Profile Details:" style="-fx-font-size: 18; -fx-padding: 20 0 20 0;" />

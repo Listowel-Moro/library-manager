@@ -12,34 +12,20 @@ import listo.librarymanager.models.Patron;
 import listo.librarymanager.models.Reservation;
 import listo.librarymanager.utils.NavigationManager;
 import listo.librarymanager.utils.SessionManager;
+import java.sql.*;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import javafx.util.Callback;
 
 public class PatronDashboardController {
 
-    @FXML
-    private TableView<Book> searchResultsTable;
-
-    @FXML
-    private TextField searchField;
-
-    @FXML
-    private Label accountName;
-
-    @FXML
-    private Label accountPhone;
+    @FXML private TableView<Book> searchResultsTable;
+    @FXML private TextField searchField;
+    @FXML private Label accountName;
+    @FXML private Label accountPhone;
 
     private Patron currentUser;
 
     @FXML
     private TableColumn<Book, String> titleColumn, publisherColumn, genreColumn, statusColumn, isbnColumn, reservationLinkColumn;
-
     private final ObservableList<Book> bookList = FXCollections.observableArrayList();
 
     public void initialize() {
@@ -72,13 +58,14 @@ public class PatronDashboardController {
                     });
                     setGraphic(link);
                     setText(null);
-               }
+                }
             }
         });
 
         // Load reservations table
         reservationIdColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
         bookTitleColumn.setCellValueFactory(new PropertyValueFactory<>("bookTitle"));
+        statusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
         reservationDateColumn.setCellValueFactory(new PropertyValueFactory<Reservation, String>("reservationDate"));
 
         borrowingIdColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
@@ -127,8 +114,10 @@ public class PatronDashboardController {
             return;
         }
 
-        // Fetch the book from the database
         String fetchBookQuery = "SELECT id, title, copies_left FROM books WHERE isbn = ?";
+        String createReservationQuery = "INSERT INTO reservations (book_id, patron_id, status) VALUES (?, ?, ?)";
+        String addToQueueQuery = "INSERT INTO book_queue (reservation_id) VALUES (?)";
+
         int bookId = -1;
         int copiesLeft = 0;
         try (Connection connection = DatabaseConnection.connectDatabase();
@@ -141,7 +130,9 @@ public class PatronDashboardController {
                     copiesLeft = resultSet.getInt("copies_left");
 
                     if (copiesLeft <= 0) {
-                        showAlert(Alert.AlertType.WARNING, "No Copies Available", "This book is currently not available for reservation.");
+                        createReservationAndQueue(connection, bookId);
+                        initialize();
+                        showAlert(Alert.AlertType.WARNING, "No Copies Available", "This book is currently not available. You have been added to the queue.");
                         return;
                     }
                 } else {
@@ -149,53 +140,68 @@ public class PatronDashboardController {
                     return;
                 }
             }
-
         } catch (SQLException e) {
             showAlert(Alert.AlertType.ERROR, "Database Error", "An error occurred while accessing the database.");
             e.printStackTrace();
             return;
         }
 
-
-        String reserveBookQuery = "INSERT INTO reservations (patron_id, book_id, reservation_date) VALUES (?, ?, CURRENT_TIMESTAMP)";
-        String updateCopiesQuery = "UPDATE books SET copies_left = copies_left - 1 WHERE id = ?";
+        // If the book is available, reserve the book (status = PENDING)
         try (Connection connection = DatabaseConnection.connectDatabase();
-             PreparedStatement reserveStmt = connection.prepareStatement(reserveBookQuery);
-             PreparedStatement updateCopiesStmt = connection.prepareStatement(updateCopiesQuery)) {
+             PreparedStatement reserveStmt = connection.prepareStatement(createReservationQuery)) {
 
             connection.setAutoCommit(false);
 
-            reserveStmt.setInt(1, currentUser.getId());
-            reserveStmt.setInt(2, bookId);
+            // Create reservation with status = 'PENDING'
+            reserveStmt.setInt(1, bookId);
+            reserveStmt.setInt(2, currentUser.getId());
+            reserveStmt.setString(3, "PENDING");
             reserveStmt.executeUpdate();
-
-            updateCopiesStmt.setInt(1, bookId);
-            updateCopiesStmt.executeUpdate();
 
             connection.commit();
             showAlert(Alert.AlertType.INFORMATION, "Success", "Book reserved successfully!");
             initialize();
+
         } catch (SQLException e) {
             showAlert(Alert.AlertType.ERROR, "Database Error", "An error occurred while reserving the book.");
             e.printStackTrace();
         }
     }
 
+    private void createReservationAndQueue(Connection connection, int bookId) throws SQLException {
+        // Create reservation with status = 'QUEUED'
+        String createReservationQuery = "INSERT INTO reservations (book_id, patron_id, status) VALUES (?, ?, ?)";
+        String addToQueueQuery = "INSERT INTO book_queue (reservation_id) VALUES (?)";
+        try (PreparedStatement reservationStmt = connection.prepareStatement(createReservationQuery, Statement.RETURN_GENERATED_KEYS);
+             PreparedStatement queueStmt = connection.prepareStatement(addToQueueQuery)) {
 
-    @FXML
-    private TableView<Reservation> reservationsTable;
-    @FXML
-    private TableColumn<Reservation, Integer> reservationIdColumn;
-    @FXML
-    private TableColumn<Reservation, Integer> bookTitleColumn;
-    @FXML
-    private TableColumn<Reservation, String> reservationDateColumn;
+            // Create reservation with status = 'QUEUED'
+            reservationStmt.setInt(1, bookId);
+            reservationStmt.setInt(2, currentUser.getId());
+            reservationStmt.setString(3, "QUEUED");
+            reservationStmt.executeUpdate();
+
+            // Get the generated reservation ID
+            ResultSet generatedKeys = reservationStmt.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                int reservationId = generatedKeys.getInt(1);
+
+                // Add the reservation to the queue
+                queueStmt.setInt(1, reservationId);
+                queueStmt.executeUpdate();
+            }
+        }
+    }
+
+    @FXML private TableView<Reservation> reservationsTable;
+    @FXML private TableColumn<Reservation, Integer> reservationIdColumn, bookTitleColumn;
+    @FXML private TableColumn<Reservation, String> reservationDateColumn;
     private void loadReservations() {
         String fetchReservationsQuery = """
-        SELECT r.id AS reservation_id, b.title AS book_title, r.reservation_date as reservation_date
+        SELECT r.id AS reservation_id, r.status as reservation_status, b.title AS book_title, r.reservation_date as reservation_date
         FROM reservations r
         JOIN books b ON r.book_id = b.id
-        WHERE r.patron_id = ? AND r.has_borrowed = false
+        WHERE r.patron_id = ? AND (r.status = 'PENDING' OR r.status = 'QUEUED')
     """;
 
         ObservableList<Reservation> reservations = FXCollections.observableArrayList();
@@ -210,11 +216,12 @@ public class PatronDashboardController {
                     int reservationId = resultSet.getInt("reservation_id");
                     String bookTitle = resultSet.getString("book_title");
                     String reservationDate = resultSet.getString("reservation_date");
+                    String status = resultSet.getString("reservation_status");
 
 //                    LocalDate date = LocalDate.parse(reservationDate);
 //                    String formattedReservationDate = date.format(DateTimeFormatter.ofPattern("MMM dd, yyyy"));
 
-                    reservations.add(new Reservation(reservationId, currentUser.getName(), bookTitle, reservationDate, false));
+                    reservations.add(new Reservation(reservationId, currentUser.getName(), bookTitle, reservationDate, status));
                 }
             }
 
@@ -227,7 +234,6 @@ public class PatronDashboardController {
     }
 
 
-    // Utility method to show alerts
     private void showAlert(Alert.AlertType alertType, String title, String message) {
         Alert alert = new Alert(alertType);
         alert.setTitle(title);
@@ -257,25 +263,10 @@ public class PatronDashboardController {
         searchResultsTable.setItems(filteredList);
     }
 
-    @FXML
-    private TableView<Borrowing> borrowedBooksTable;
-
-    @FXML
-    private TableColumn<Borrowing, Integer> borrowingIdColumn;
-
-    @FXML
-    private TableColumn<Borrowing, String> borrowedBookTitleColumn;
-
-    @FXML
-    private TableColumn<Borrowing, String> borrowedPatronNameColumn;
-
-    @FXML
-    private TableColumn<Borrowing, String> borrowedDateColumn;
-
-    @FXML
-    private TableColumn<Borrowing, String> dueDateColumn;
-    @FXML
-    private final  ObservableList<Borrowing> borrowedBooks = FXCollections.observableArrayList();
+    @FXML private TableView<Borrowing> borrowedBooksTable;
+    @FXML private TableColumn<Borrowing, Integer> borrowingIdColumn;
+    @FXML private TableColumn<Borrowing, String> borrowedBookTitleColumn, borrowedPatronNameColumn, borrowedDateColumn, dueDateColumn;
+    @FXML private final  ObservableList<Borrowing> borrowedBooks = FXCollections.observableArrayList();
     private void loadBorrowedBooks() {
         String query = """
         SELECT b.id AS borrowing_id, bk.title AS book_title,
@@ -317,8 +308,7 @@ public class PatronDashboardController {
         }
     }
 
-    @FXML
-    private TextField searchBorrowedBooksField;
+    @FXML private TextField searchBorrowedBooksField;
     @FXML
     private void onSearchBorrowedBooksClick() {
         String searchQuery = searchBorrowedBooksField.getText().trim().toLowerCase();
@@ -339,7 +329,6 @@ public class PatronDashboardController {
         }
         borrowedBooksTable.setItems(filteredList);
     }
-
 
     @FXML
     public void patronLogout(){

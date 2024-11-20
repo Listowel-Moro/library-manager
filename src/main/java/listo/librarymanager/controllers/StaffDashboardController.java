@@ -1,6 +1,6 @@
 package listo.librarymanager.controllers;
 
-import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -8,33 +8,22 @@ import javafx.scene.control.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.HBox;
-import javafx.scene.text.Text;
 import listo.librarymanager.config.DatabaseConnection;
 import listo.librarymanager.models.*;
 import listo.librarymanager.utils.NavigationManager;
 import listo.librarymanager.utils.SessionManager;
-
-import java.awt.*;
 import java.sql.*;
-import java.util.List;
+
 
 public class StaffDashboardController {
 
-    @FXML
-    private TableView<Book> searchResultsTable;
-
-    @FXML
-    private TextField searchField;
-
-    @FXML
-    private TableColumn<Book, String> titleColumn, publisherColumn, genreColumn, isbnColumn, copiesLeftColumn;
-
+    @FXML private TableView<Book> searchResultsTable;
+    @FXML private TextField searchField;
+    @FXML private TableColumn<Book, String> titleColumn, publisherColumn, genreColumn, isbnColumn, copiesLeftColumn;
 
     private final ObservableList<Book> bookList = FXCollections.observableArrayList();
 
-    @FXML
-    private Label accountName, accountPhone;
+    @FXML private Label accountName, accountPhone;
 
     private Staff currentUser;
 
@@ -53,11 +42,39 @@ public class StaffDashboardController {
         patronNameColumn.setCellValueFactory(new PropertyValueFactory<>("patronName"));
         bookTitleColumn.setCellValueFactory(new PropertyValueFactory<>("bookTitle"));
         reservationDateColumn.setCellValueFactory(new PropertyValueFactory<>("reservationDate"));
-        hasBorrowedColumn.setCellValueFactory(new PropertyValueFactory<>("hasBorrowed"));
-        approveColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
+        statusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
+        approveColumn.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue()));
 
-        approveColumn.setCellFactory(column -> new TableCell<Reservation, Integer>() {
+
+        approveColumn.setCellFactory(column -> new TableCell<Reservation, Reservation>() {
             private final Hyperlink link = new Hyperlink("Approve");
+
+            @Override
+            protected void updateItem(Reservation reservation, boolean empty) {
+                super.updateItem(reservation, empty);
+                if (empty || reservation == null || reservation.getStatus().equals("QUEUED")) {
+                    setGraphic(null);
+                    setText(null);
+                } else {
+                    link.setOnAction(event -> {
+                        handleApproval(reservation.getId());
+                    });
+                    setGraphic(link);
+                    setText(null);
+                }
+            }
+        });
+
+
+        borrowingIdColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
+        borrowedBookTitleColumn.setCellValueFactory(new PropertyValueFactory<>("bookTitle"));
+        borrowedPatronNameColumn.setCellValueFactory(new PropertyValueFactory<>("patronName"));
+        borrowedDateColumn.setCellValueFactory(new PropertyValueFactory<>("borrowedDate"));
+        dueDateColumn.setCellValueFactory(new PropertyValueFactory<>("dueDate"));
+        checkInColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
+
+        checkInColumn.setCellFactory(column -> new TableCell<Borrowing, Integer>() {
+            private final Hyperlink link = new Hyperlink("Check in");
 
             @Override
             protected void updateItem(Integer id, boolean empty) {
@@ -67,7 +84,7 @@ public class StaffDashboardController {
                     setText(null);
                 } else {
                     link.setOnAction(event -> {
-                        handleApproval(id);
+                        handleCheckIn(id);
                     });
                     setGraphic(link);
                     setText(null);
@@ -75,11 +92,6 @@ public class StaffDashboardController {
             }
         });
 
-        borrowingIdColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
-        borrowedBookTitleColumn.setCellValueFactory(new PropertyValueFactory<>("bookTitle"));
-        borrowedPatronNameColumn.setCellValueFactory(new PropertyValueFactory<>("patronName"));
-        borrowedDateColumn.setCellValueFactory(new PropertyValueFactory<>("borrowedDate"));
-        dueDateColumn.setCellValueFactory(new PropertyValueFactory<>("dueDate"));
 
         loadBorrowedBooks();
         loadBooksFromDatabase();
@@ -138,11 +150,8 @@ public class StaffDashboardController {
         NavigationManager.navigateTo("/listo/librarymanager/login-navigator.fxml");
     }
 
-    @FXML
-    private TextField titleField, publisherField, genreField, copiesLeftField, isbnField;
-
-    @FXML
-    private Label messageLabel;
+    @FXML private TextField titleField, publisherField, genreField, copiesLeftField, isbnField;
+    @FXML private Label messageLabel;
 
     @FXML
     public void onAddBookClick() {
@@ -209,23 +218,19 @@ public class StaffDashboardController {
         }
     }
 
-    @FXML
-    private TableView<Reservation> reviewReservationsTable;
-    @FXML
-    private TableColumn<Reservation, Integer> reservationIdColumn;
-    @FXML
-    private TableColumn<Reservation, String> patronNameColumn, bookTitleColumn, reservationDateColumn, hasBorrowedColumn;
-    @FXML
-    private TableColumn<Reservation, Integer> approveColumn;
+    @FXML private TableView<Reservation> reviewReservationsTable;
+    @FXML private TableColumn<Reservation, Integer> reservationIdColumn;
+    @FXML private TableColumn<Reservation, String> patronNameColumn, bookTitleColumn, reservationDateColumn, statusColumn;
+    @FXML private TableColumn<Reservation, Reservation> approveColumn;
 
     private void loadPendingReservations() {
         String fetchReservationsQuery = """
-        SELECT r.id AS reservation_id, p.name AS patron_name, b.title AS book_title,
+        SELECT r.id AS reservation_id, r.status as reservation_status, p.name AS patron_name, b.title AS book_title,
                r.reservation_date AS reservation_date, r.has_borrowed AS has_borrowed
         FROM reservations r
         JOIN patrons p ON r.patron_id = p.id
         JOIN books b ON r.book_id = b.id
-        WHERE r.has_borrowed = false
+        WHERE r.status = 'PENDING' OR r.status = 'QUEUED'
     """;
 
         ObservableList<Reservation> reservations = FXCollections.observableArrayList();
@@ -240,9 +245,9 @@ public class StaffDashboardController {
                 System.out.println("Patron name for reservation ID: "+ id + " = " + patronName);
                 String bookTitle = resultSet.getString("book_title");
                 String reservationDate = resultSet.getString("reservation_date");
-                boolean hasBorrowed = resultSet.getBoolean("has_borrowed");
+                String status = resultSet.getString("reservation_status");
 
-                reservations.add(new Reservation(id, patronName, bookTitle, reservationDate, hasBorrowed));
+                reservations.add(new Reservation(id, patronName, bookTitle, reservationDate, status));
             }
 
             reviewReservationsTable.setItems(reservations);
@@ -256,11 +261,11 @@ public class StaffDashboardController {
     private void handleApproval(int reservationId) {
         String updateReservationQuery = """
             UPDATE reservations
-            SET has_borrowed = true
+            SET status = 'APPROVED'
             WHERE id = ?
         """;
 
-        String getReserverationQuery = """
+        String getReservationQuery = """
                 SELECT patron_id, book_id from reservations
                 """;
 
@@ -280,7 +285,7 @@ public class StaffDashboardController {
 
             if (rowsAffected > 0) {
                 int patronId = 0, bookId = 0;
-                ResultSet resultSet = getRservationStatement.executeQuery(getReserverationQuery);
+                ResultSet resultSet = getRservationStatement.executeQuery(getReservationQuery);
                 while (resultSet.next()) {
                     patronId = resultSet.getInt("patron_id");
                     bookId = resultSet.getInt("book_id");
@@ -291,8 +296,8 @@ public class StaffDashboardController {
                 int borrowRowsAffected = insertStatement.executeUpdate();
 
                 if (borrowRowsAffected > 0) {
-                    showAlert(Alert.AlertType.INFORMATION, "Success", "Reservation approved and borrowing created successfully!");
                     initialize();
+                    showAlert(Alert.AlertType.INFORMATION, "Success", "Reservation approved and borrowing created successfully!");
                 } else {
                     showAlert(Alert.AlertType.ERROR, "Error", "Failed to create borrowing record.");
                 }
@@ -314,7 +319,6 @@ public class StaffDashboardController {
             if (rowsAffected > 0) {
                 //showAlert(Alert.AlertType.INFORMATION, "Success", "Reservation approved successfully!");
                 initialize();
-                //loadReservations();
             } else {
                 showAlert(Alert.AlertType.ERROR, "Error", "Failed to approve reservation.");
             }
@@ -325,23 +329,10 @@ public class StaffDashboardController {
         }
     }
 
-    @FXML
-    private TableView<Borrowing> borrowedBooksTable;
-
-    @FXML
-    private TableColumn<Borrowing, Integer> borrowingIdColumn;
-
-    @FXML
-    private TableColumn<Borrowing, String> borrowedBookTitleColumn;
-
-    @FXML
-    private TableColumn<Borrowing, String> borrowedPatronNameColumn;
-
-    @FXML
-    private TableColumn<Borrowing, String> borrowedDateColumn;
-
-    @FXML
-    private TableColumn<Borrowing, String> dueDateColumn;
+    @FXML private TableView<Borrowing> borrowedBooksTable;
+    @FXML private TableColumn<Borrowing, Integer> borrowingIdColumn;
+    @FXML private TableColumn<Borrowing, Integer> checkInColumn;
+    @FXML private TableColumn<Borrowing, String> dueDateColumn, borrowedDateColumn, borrowedPatronNameColumn, borrowedBookTitleColumn;
     @FXML
     private final  ObservableList<Borrowing> borrowedBooks = FXCollections.observableArrayList();
     private void loadBorrowedBooks() {
@@ -353,6 +344,7 @@ public class StaffDashboardController {
         JOIN patrons p ON b.patron_id = p.id
         WHERE b.is_returned = false
     """;
+        borrowedBooks.clear();
 
         try (Connection connection = DatabaseConnection.connectDatabase();
              PreparedStatement preparedStatement = connection.prepareStatement(query);
@@ -376,8 +368,91 @@ public class StaffDashboardController {
         }
     }
 
-    @FXML
-    private TextField searchBorrowedBooksField;
+    private void handleCheckIn(int id) {
+        String updateBorrowingQuery = "UPDATE borrowing SET is_returned = true WHERE id = ?";
+        String incrementCopiesQuery = """
+        UPDATE books
+        SET copies_left = copies_left + 1
+        WHERE id = (SELECT book_id FROM borrowing WHERE id = ?)
+    """;
+        String fetchBookIdQuery = "SELECT book_id FROM borrowing WHERE id = ?";
+        String fetchQueuedReservationQuery = """
+        SELECT r.id
+        FROM book_queue q
+        JOIN reservations r ON q.reservation_id = r.id
+        WHERE r.book_id = ? AND r.status = 'QUEUED'
+        ORDER BY q.id ASC
+        LIMIT 1
+    """;
+        String updateReservationStatusQuery = "UPDATE reservations SET status = 'PENDING' WHERE id = ?";
+        String removeFromQueueQuery = "DELETE FROM book_queue WHERE reservation_id = ?";
+
+        try (Connection connection = DatabaseConnection.connectDatabase();
+             PreparedStatement updateBorrowingStmt = connection.prepareStatement(updateBorrowingQuery);
+             PreparedStatement incrementCopiesStmt = connection.prepareStatement(incrementCopiesQuery);
+             PreparedStatement fetchBookIdStmt = connection.prepareStatement(fetchBookIdQuery);
+             PreparedStatement fetchQueuedReservationStmt = connection.prepareStatement(fetchQueuedReservationQuery);
+             PreparedStatement updateReservationStatusStmt = connection.prepareStatement(updateReservationStatusQuery);
+             PreparedStatement removeFromQueueStmt = connection.prepareStatement(removeFromQueueQuery)) {
+
+            connection.setAutoCommit(false);
+
+            // Update borrowing record to set is_returned = true
+            updateBorrowingStmt.setInt(1, id);
+            int rowsAffected = updateBorrowingStmt.executeUpdate();
+
+            if (rowsAffected > 0) {
+                // Fetch the book ID associated with this borrowing
+                fetchBookIdStmt.setInt(1, id);
+                int bookId;
+                try (ResultSet resultSet = fetchBookIdStmt.executeQuery()) {
+                    if (resultSet.next()) {
+                        bookId = resultSet.getInt("book_id");
+                    } else {
+                        connection.rollback();
+                        showAlert(Alert.AlertType.ERROR, "Error", "Could not find the associated book for this borrowing.");
+                        return;
+                    }
+                }
+
+                // Increment the book's copies_left
+                incrementCopiesStmt.setInt(1, id);
+                incrementCopiesStmt.executeUpdate();
+
+                // Check if there is a queued reservation for this book
+                fetchQueuedReservationStmt.setInt(1, bookId);
+                try (ResultSet resultSet = fetchQueuedReservationStmt.executeQuery()) {
+                    if (resultSet.next()) {
+                        int reservationId = resultSet.getInt("id");
+
+                        // Update reservation status to 'PENDING'
+                        updateReservationStatusStmt.setInt(1, reservationId);
+                        updateReservationStatusStmt.executeUpdate();
+
+                        // Remove reservation from the queue
+                        removeFromQueueStmt.setInt(1, reservationId);
+                        removeFromQueueStmt.executeUpdate();
+
+                        System.out.println("Reservation ID " + reservationId + " has been moved to 'PENDING'.");
+                    }
+                }
+
+                connection.commit();
+                System.out.println("Book with borrowing id: " + id + " has been checked in successfully.");
+                showAlert(Alert.AlertType.INFORMATION, "Check-In Successful", "The book has been returned successfully.");
+                initialize(); // Reload UI to reflect changes
+            } else {
+                connection.rollback();
+                showAlert(Alert.AlertType.ERROR, "Check-In Failed", "No borrowing record found with the provided ID.");
+            }
+
+        } catch (SQLException e) {
+            showAlert(Alert.AlertType.ERROR, "Database Error", "Failed to check in the book: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    @FXML private TextField searchBorrowedBooksField;
     @FXML
     private void onSearchBorrowedBooksClick() {
         String searchQuery = searchBorrowedBooksField.getText().trim().toLowerCase();

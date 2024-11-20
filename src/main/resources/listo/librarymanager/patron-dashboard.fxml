@@ -48,6 +48,7 @@
                         <TableColumn text="Reservation ID" fx:id="reservationIdColumn" />
                         <TableColumn text="Book Title" fx:id="bookTitleColumn" />
                         <TableColumn text="Reservation Date" fx:id="reservationDateColumn" />
+                        <TableColumn text="Status" fx:id="statusColumn" />
                     </columns>
                 </TableView>
             </VBox>

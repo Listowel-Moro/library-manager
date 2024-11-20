@@ -5,6 +5,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class DatabaseInitializer {
+
+    // SQL query to create the "patrons" table
     private static final String CREATE_PATRONS_TABLE_QUERY = """
         CREATE TABLE IF NOT EXISTS patrons (
             id INT AUTO_INCREMENT PRIMARY KEY,
@@ -16,6 +18,7 @@ public class DatabaseInitializer {
         )
     """;
 
+    // SQL query to create the "staff" table
     private static final String CREATE_STAFF_TABLE_QUERY = """
         CREATE TABLE IF NOT EXISTS staff (
             id INT AUTO_INCREMENT PRIMARY KEY,
@@ -27,7 +30,8 @@ public class DatabaseInitializer {
         )
     """;
 
-    private static  final String CREATE_BOOk_TABLE_QUERY = """
+    // SQL query to create the "books" table
+    private static final String CREATE_BOOk_TABLE_QUERY = """
             CREATE TABLE IF NOT EXISTS books (
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 title VARCHAR(255) NOT NULL,
@@ -40,19 +44,22 @@ public class DatabaseInitializer {
             );
             """;
 
-    private static  final String CREATE_RESERVATION_TABLE_QUERY = """
+    // SQL query to create the "reservations" table
+    private static final String CREATE_RESERVATION_TABLE_QUERY = """
             CREATE TABLE IF NOT EXISTS reservations (
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 patron_id INT NOT NULL,
                 book_id INT NOT NULL,
                 reservation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 has_borrowed BOOLEAN DEFAULT false,
+                status ENUM('PENDING', 'QUEUED', 'APPROVED') DEFAULT 'PENDING',
                 FOREIGN KEY (patron_id) REFERENCES patrons(id) ON DELETE CASCADE,
                 FOREIGN KEY (book_id) REFERENCES books(id) ON DELETE CASCADE
             );
             """;
 
-    private  static final String CREATE_BORROWING_TABLE_QUERY = """
+    // SQL query to create the "borrowing" table
+    private static final String CREATE_BORROWING_TABLE_QUERY = """
             CREATE TABLE IF NOT EXISTS borrowing (
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 patron_id INT NOT NULL,
@@ -65,18 +72,38 @@ public class DatabaseInitializer {
             );
             """;
 
-    public static boolean initializeDatabase(Connection connection){
-        try{
+    // SQL query to create the "book_queue" table
+    private static final String CREATE_BOOK_QUEUE_QUERY = """
+            CREATE TABLE IF NOT EXISTS book_queue (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                reservation_id INT NOT NULL,
+                request_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (reservation_id) REFERENCES reservations(id)
+            );
+    """;
+
+    /**
+     * Initializes the database by creating all necessary tables if they do not already exist.
+     *
+     * @param connection the database connection to use for table creation
+     * @return true if all tables are successfully created; false otherwise
+     */
+    public static boolean initializeDatabase(Connection connection) {
+        try {
+            // Create a statement to execute SQL queries
             Statement statement = connection.createStatement();
+            // Execute queries to create each table
             statement.execute(CREATE_PATRONS_TABLE_QUERY);
             statement.execute(CREATE_STAFF_TABLE_QUERY);
             statement.execute(CREATE_BOOk_TABLE_QUERY);
             statement.execute(CREATE_RESERVATION_TABLE_QUERY);
             statement.execute(CREATE_BORROWING_TABLE_QUERY);
+            statement.execute(CREATE_BOOK_QUEUE_QUERY);
 
             return true;
 
-        } catch (Exception e){
+        } catch (Exception e) {
+            // Print error details to the console
             System.out.println("Error while creating tables " + e);
             return false;
         }
