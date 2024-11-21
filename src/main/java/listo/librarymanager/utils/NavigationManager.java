@@ -29,12 +29,9 @@ public class NavigationManager {
      */
     public static void navigateTo(String fxmlPath) {
         try {
-            // Load the FXML file
             Parent root = FXMLLoader.load(Objects.requireNonNull(NavigationManager.class.getResource(fxmlPath)));
-            // Update the root of the current scene
             primaryStage.getScene().setRoot(root);
         } catch (Exception e) {
-            // Print any errors that occur during navigation
             e.printStackTrace();
         }
     }
