@@ -11,6 +11,7 @@ public abstract class User {
         this.id = id;
     }
 
-    public abstract User registerUser();
-    public  abstract User loginUser();
+    public abstract String getName();
+    public abstract String getPhone();
+    public abstract int getId();
 }

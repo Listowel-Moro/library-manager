@@ -18,11 +18,15 @@ import static listo.librarymanager.config.DatabaseConnection.connectDatabase;
 public class AuthController {
 
     // FXML fields for user input
-    @FXML private TextField usernameField;
+    @FXML
+    TextField usernameField;
     @FXML public TextField phoneField;
-    @FXML private PasswordField passwordField;
-    @FXML private PasswordField confirmPasswordField;
-    @FXML private Label messageLabel;
+    @FXML
+    PasswordField passwordField;
+    @FXML
+    PasswordField confirmPasswordField;
+    @FXML
+    Label messageLabel;
     @FXML private Button signupButton;
 
     /**
@@ -55,7 +59,7 @@ public class AuthController {
             messageLabel.setText("Signup successful! Please log in.");
             onNavigateToPatronLoginClick();
         } else {
-            messageLabel.setText("Signup failed! Username may already exist.");
+            messageLabel.setText("Registration failed. Username and phone might already exist.");
         }
     }
 
@@ -252,11 +256,11 @@ public class AuthController {
      *
      * @param message The error message to display
      */
-    private void showError(String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Error");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
+//    private void showError(String message) {
+//        Alert alert = new Alert(Alert.AlertType.ERROR);
+//        alert.setTitle("Error");
+//        alert.setHeaderText(null);
+//        alert.setContentText(message);
+//        alert.showAndWait();
+//    }
 }

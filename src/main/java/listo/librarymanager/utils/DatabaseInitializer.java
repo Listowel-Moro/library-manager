@@ -78,7 +78,7 @@ public class DatabaseInitializer {
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 reservation_id INT NOT NULL,
                 request_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (reservation_id) REFERENCES reservations(id)
+                FOREIGN KEY (reservation_id) REFERENCES reservations(id) ON DELETE CASCADE
             );
     """;
 

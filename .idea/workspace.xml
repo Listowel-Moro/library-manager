@@ -1,27 +1,230 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
-    <list default="true" id="21f5cc14-b099-4128-b2bd-1d1605f7e879" name="Changes" comment="" />
+    <list default="true" id="21f5cc14-b099-4128-b2bd-1d1605f7e879" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mvnw" beforeDir="false" afterPath="$PROJECT_DIR$/mvnw" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mvnw.cmd" beforeDir="false" afterPath="$PROJECT_DIR$/mvnw.cmd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/listo/librarymanager/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/listo/librarymanager/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/listo/librarymanager/config/DatabaseConnection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/listo/librarymanager/config/DatabaseConnection.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/listo/librarymanager/controllers/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/listo/librarymanager/controllers/AuthController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/listo/librarymanager/controllers/PatronDashboardController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/listo/librarymanager/controllers/PatronDashboardController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/listo/librarymanager/models/Book.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/listo/librarymanager/models/Book.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/listo/librarymanager/models/Borrowing.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/listo/librarymanager/models/Borrowing.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/listo/librarymanager/models/Patron.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/listo/librarymanager/models/Patron.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/listo/librarymanager/models/Reservation.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/listo/librarymanager/models/Reservation.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/listo/librarymanager/models/Staff.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/listo/librarymanager/models/Staff.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/listo/librarymanager/models/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/listo/librarymanager/models/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/listo/librarymanager/utils/DatabaseInitializer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/listo/librarymanager/utils/DatabaseInitializer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/listo/librarymanager/utils/SessionManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/listo/librarymanager/utils/SessionManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/module-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/module-info.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 3
-}]]></component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="FxmlFile" />
+        <option value="JUnit5 Test Class" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 3
+}</component>
   <component name="ProjectId" id="2opyy3oPdgKO5xkuILfwSsfNmuQ" />
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="1" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "Application.HelloApplication.executor": "Run",
+    "Application.Main.executor": "Run",
+    "JUnit.AuthControllerTest.emptyInputValuesShouldPrintErrorMessage.executor": "Run",
+    "JUnit.AuthControllerTest.executor": "Coverage",
+    "JUnit.AuthControllerTest.loggedInStaffShouldHaveSameNameAsCurrentUser.executor": "Run",
+    "JUnit.AuthControllerTest.loginWithInvalidPasswordShouldReturnIncorrectPassword.executor": "Run",
+    "JUnit.AuthControllerTest.loginWithInvalidStaffPasswordShouldAlertError.executor": "Run",
+    "JUnit.AuthControllerTest.loginWithInvalidStaffUsernameShouldAlertError.executor": "Run",
+    "JUnit.AuthControllerTest.loginWithInvalidUsernameShouldReturnUserNotFound.executor": "Run",
+    "JUnit.AuthControllerTest.mismatchedPasswordShouldPrintErrorMessage.executor": "Run",
+    "JUnit.AuthControllerTest.testMyNameIsListowel.executor": "Run",
+    "JUnit.AuthControllerTest.testPatronLoginSuccess.executor": "Run",
+    "JUnit.AuthControllerTest.testPatronRegistrationFailure.executor": "Run",
+    "JUnit.AuthControllerTest.testPatronRegistrationSuccess.executor": "Run",
+    "JUnit.BookTest.executor": "Run",
+    "JUnit.BorrowingTest.executor": "Run",
+    "JUnit.DatabaseConfigTest.executor": "Run",
+    "JUnit.DatabaseConfigTest.testCloseDatabaseConnection.executor": "Run",
+    "JUnit.DatabaseConfigTest.testCloseDatabaseConnectionWithException.executor": "Run",
+    "JUnit.DatabaseConfigTest.testConnectDatabase.executor": "Run",
+    "JUnit.DatabaseConfigTest.testConnectDatabaseWithException.executor": "Run",
+    "JUnit.DatabaseInitializerTest.executor": "Run",
+    "JUnit.DatabaseInitializerTest.testInitializeDatabase_Success.executor": "Run",
+    "JUnit.HashPasswordTest.differentPasswordShouldProduceDifferentHashes.executor": "Run",
+    "JUnit.HashPasswordTest.executor": "Run",
+    "JUnit.HashPasswordTest.hashPasswordShouldBeDifferentFromOriginal.executor": "Run",
+    "JUnit.HashPasswordTest.samePasswordShouldProduceSameHashes.executor": "Run",
+    "JUnit.HashPasswordTest.testHashPasswordThrowsRuntimeException.executor": "Run",
+    "JUnit.PatronControllerTest.executor": "Run",
+    "JUnit.PatronControllerTest.testInitialize_ColumnMappings.executor": "Run",
+    "JUnit.PatronControllerTest.testLoadBooksFromDatabase_NoBook.executor": "Run",
+    "JUnit.PatronControllerTest.testLoadBooksFromDatabase_Success.executor": "Run",
+    "JUnit.PatronControllerTest.testPatronLogout.executor": "Run",
+    "JUnit.PatronControllerTest.testReserveBookWhenBookNotAvailable.executor": "Run",
+    "JUnit.PatronControllerTest.testReserveBookWhenNoCopiesAvailable.executor": "Run",
+    "JUnit.PatronControllerTest.testReserveBookWhenNoLoggedUser.executor": "Run",
+    "JUnit.PatronControllerTest.testReserveBookWhenSuccess.executor": "Run",
+    "JUnit.PatronControllerTest.testReserveBookWithEmptyISBN.executor": "Run",
+    "JUnit.PatronControllerTest.testReserveBook_BookAvailable.executor": "Run",
+    "JUnit.PatronControllerTest.testReserveBook_BookNotFound.executor": "Run",
+    "JUnit.PatronTest.executor": "Run",
+    "JUnit.PatronTest.testGetsCreatedWithCorrectName.executor": "Run",
+    "JUnit.ReservationTest.executor": "Run",
+    "JUnit.SessionManagerTest.executor": "Debug",
+    "JUnit.SessionManagerTest.noLoggedInUserShouldReturnNull.executor": "Run",
+    "JUnit.SessionManagerTest.shouldReturnNullAfterClearingSession.executor": "Run",
+    "JUnit.StaffTest.executor": "Run",
+    "JUnit.UserTest.executor": "Run",
+    "Maven.library-manager [clean].executor": "Run",
+    "Maven.library-manager [install].executor": "Run",
+    "Maven.library-manager [package].executor": "Run",
+    "Maven.library-manager [test].executor": "Run",
+    "Maven.library-manager [verify].executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "kotlin-language-version-configured": "true"
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary": "JUnit5",
+    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5": "",
+    "git-widget-placeholder": "master",
+    "ignore.virus.scanning.warn.message": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/ListowelAdolwinMoro/ProductManagementSystem",
+    "project.structure.last.edited": "Libraries",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.33886462",
+    "run.code.analysis.last.selected.profile": "pProject Default",
+    "settings.editor.selected.configurable": "preferences.keymap"
   }
 }]]></component>
+  <component name="RecentsManager">
+    <key name="CreateTestDialog.Recents.Supers">
+      <recent name="" />
+    </key>
+    <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="listo.librarymanager.config" />
+      <recent name="listo.librarymanager.utils" />
+      <recent name="listo.librarymanager" />
+    </key>
+    <key name="CreateTestDialog.RecentsKey">
+      <recent name="listo.librarymanager.utils" />
+    </key>
+  </component>
+  <component name="RunManager" selected="JUnit.PatronControllerTest">
+    <configuration name="PatronControllerTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="library-manager" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="listo.librarymanager.controllers.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="listo.librarymanager.controllers" />
+      <option name="MAIN_CLASS_NAME" value="listo.librarymanager.controllers.PatronControllerTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="PatronControllerTest.testInitialize_ColumnMappings" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="library-manager" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="listo.librarymanager.controllers.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="listo.librarymanager.controllers" />
+      <option name="MAIN_CLASS_NAME" value="listo.librarymanager.controllers.PatronControllerTest" />
+      <option name="METHOD_NAME" value="testInitialize_ColumnMappings" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="PatronControllerTest.testPatronLogout" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="library-manager" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="listo.librarymanager.controllers.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="listo.librarymanager.controllers" />
+      <option name="MAIN_CLASS_NAME" value="listo.librarymanager.controllers.PatronControllerTest" />
+      <option name="METHOD_NAME" value="testPatronLogout" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="PatronControllerTest.testReserveBookWhenNoCopiesAvailable" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="library-manager" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="listo.librarymanager.controllers.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="listo.librarymanager.controllers" />
+      <option name="MAIN_CLASS_NAME" value="listo.librarymanager.controllers.PatronControllerTest" />
+      <option name="METHOD_NAME" value="testReserveBookWhenNoCopiesAvailable" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="PatronControllerTest.testReserveBookWhenSuccess" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="library-manager" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="listo.librarymanager.controllers.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="listo.librarymanager.controllers" />
+      <option name="MAIN_CLASS_NAME" value="listo.librarymanager.controllers.PatronControllerTest" />
+      <option name="METHOD_NAME" value="testReserveBookWhenSuccess" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="JUnit.PatronControllerTest" />
+        <item itemvalue="JUnit.PatronControllerTest.testInitialize_ColumnMappings" />
+        <item itemvalue="JUnit.PatronControllerTest.testPatronLogout" />
+        <item itemvalue="JUnit.PatronControllerTest.testReserveBookWhenSuccess" />
+        <item itemvalue="JUnit.PatronControllerTest.testReserveBookWhenNoCopiesAvailable" />
+      </list>
+    </recent_temporary>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -32,5 +235,10 @@
       <updated>1731581064952</updated>
     </task>
     <servers />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/library_manager$AuthControllerTest.ic" NAME="AuthControllerTest Coverage Results" MODIFIED="1734335875676" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>listo.librarymanager.controllers.*</FILTER>
+    </SUITE>
   </component>
 </project>

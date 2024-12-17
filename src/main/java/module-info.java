@@ -5,7 +5,7 @@ module listo.librarymanager {
     requires org.controlsfx.controls;
     requires com.dlsc.formsfx;
     requires net.synedra.validatorfx;
-    requires org.kordamp.bootstrapfx.core;
+    //requires org.kordamp.bootstrapfx.core;
     requires java.sql;
     requires jbcrypt;
     requires java.desktop;

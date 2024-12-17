@@ -9,12 +9,29 @@ public class DatabaseConnection {
     private static final String DB_USERNAME="root";
     private static final String DB_PASSWORD="Listo$tar01";
 
+    private static String environment = "production";
+
 public static Connection connectDatabase() throws SQLException {
-        Connection connection = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
-        return connection;
+        if (environment.equals("test")){
+            return connectToTestDatabase();
+        } else {
+            return connectToProductionDatabase();
+        }
     }
 
     public static void closeDatabaseConnection(Connection connection) throws SQLException {
         connection.close();
+    }
+
+    private static Connection connectToProductionDatabase() throws SQLException {
+        return DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
+    }
+
+    private static Connection connectToTestDatabase() throws SQLException {
+        return DriverManager.getConnection("jdbc:h2:mem:testdb", "sa", "");
+    }
+
+    public static void setEnvironment(String environ){
+        environment = environ;
     }
 }

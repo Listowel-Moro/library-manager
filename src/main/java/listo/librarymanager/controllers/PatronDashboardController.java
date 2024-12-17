@@ -17,7 +17,8 @@ import java.sql.*;
 
 public class PatronDashboardController {
 
-    @FXML private TableView<Book> searchResultsTable;
+    @FXML
+    TableView<Book> searchResultsTable;
     @FXML private TextField searchField;
     @FXML private Label accountName;
     @FXML private Label accountPhone;
@@ -25,8 +26,18 @@ public class PatronDashboardController {
     private Patron currentUser;
 
     @FXML
-    private TableColumn<Book, String> titleColumn, publisherColumn, genreColumn, statusColumn, isbnColumn, reservationLinkColumn;
-    private final ObservableList<Book> bookList = FXCollections.observableArrayList();
+    TableColumn<Book, String> titleColumn;
+    @FXML
+    TableColumn<Book, String> publisherColumn;
+    @FXML
+    TableColumn<Book, String> genreColumn;
+    @FXML
+    private TableColumn<Book, String> statusColumn;
+    @FXML
+    TableColumn<Book, String> isbnColumn;
+    @FXML
+    TableColumn<Book, String> reservationLinkColumn;
+    final ObservableList<Book> bookList = FXCollections.observableArrayList();
 
     public void initialize() {
         currentUser = (Patron) SessionManager.getCurrentUser();
@@ -79,7 +90,7 @@ public class PatronDashboardController {
         loadBooksFromDatabase();
     }
 
-    private void loadBooksFromDatabase() {
+    void loadBooksFromDatabase() {
         String fetchBooksQuery = "SELECT * FROM books";
         try (Connection connection = DatabaseConnection.connectDatabase();
              PreparedStatement preparedStatement = connection.prepareStatement(fetchBooksQuery);
@@ -103,13 +114,14 @@ public class PatronDashboardController {
         }
     }
 
-    private void reserveBook(String isbn) {
+    void reserveBook(String isbn) {
+        //System.out.println("COntroller user: " + SessionManager.getCurrentUser().getPhone());
         if (isbn == null || isbn.isEmpty()) {
             showAlert(Alert.AlertType.WARNING, "Invalid Input", "Please provide a valid ISBN.");
             return;
         }
 
-        if (currentUser == null) {
+        if (SessionManager.getCurrentUser() == null) {
             showAlert(Alert.AlertType.ERROR, "User Not Logged In", "You need to log in to reserve a book.");
             return;
         }
@@ -154,7 +166,7 @@ public class PatronDashboardController {
 
             // Create reservation with status = 'PENDING'
             reserveStmt.setInt(1, bookId);
-            reserveStmt.setInt(2, currentUser.getId());
+            reserveStmt.setInt(2, SessionManager.getCurrentUser().getId());
             reserveStmt.setString(3, "PENDING");
             reserveStmt.executeUpdate();
 
@@ -177,7 +189,7 @@ public class PatronDashboardController {
 
             // Create reservation with status = 'QUEUED'
             reservationStmt.setInt(1, bookId);
-            reservationStmt.setInt(2, currentUser.getId());
+            reservationStmt.setInt(2, SessionManager.getCurrentUser().getId());
             reservationStmt.setString(3, "QUEUED");
             reservationStmt.executeUpdate();
 
@@ -193,18 +205,19 @@ public class PatronDashboardController {
         }
     }
 
-    @FXML private TableView<Reservation> reservationsTable;
+    @FXML
+    TableView<Reservation> reservationsTable;
     @FXML private TableColumn<Reservation, Integer> reservationIdColumn, bookTitleColumn;
     @FXML private TableColumn<Reservation, String> reservationDateColumn;
-    private void loadReservations() {
+    ObservableList<Reservation> reservations = FXCollections.observableArrayList();
+
+    void loadReservations() {
         String fetchReservationsQuery = """
         SELECT r.id AS reservation_id, r.status as reservation_status, b.title AS book_title, r.reservation_date as reservation_date
         FROM reservations r
         JOIN books b ON r.book_id = b.id
         WHERE r.patron_id = ? AND (r.status = 'PENDING' OR r.status = 'QUEUED')
     """;
-
-        ObservableList<Reservation> reservations = FXCollections.observableArrayList();
 
         try (Connection connection = DatabaseConnection.connectDatabase();
              PreparedStatement preparedStatement = connection.prepareStatement(fetchReservationsQuery)) {
@@ -234,7 +247,7 @@ public class PatronDashboardController {
     }
 
 
-    private void showAlert(Alert.AlertType alertType, String title, String message) {
+    public void showAlert(Alert.AlertType alertType, String title, String message) {
         Alert alert = new Alert(alertType);
         alert.setTitle(title);
         alert.setHeaderText(null);
