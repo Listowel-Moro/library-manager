@@ -262,26 +262,6 @@ public class PatronControllerTest {
         assertNull(SessionManager.getCurrentUser());
     }
 
-//    @Test
-//    void testInitialize_ColumnMappings() {
-//        patronController.titleColumn = new TableColumn<>();
-//        patronController.publisherColumn = new TableColumn<>();
-//        patronController.genreColumn = new TableColumn<>();
-//        patronController.isbnColumn = new TableColumn<>();
-//        patronController.reservationLinkColumn = new TableColumn<>();
-//
-//        // Call initialize method
-//        Platform.runLater(() -> patronController.initialize());
-//
-//        // Verify column mappings
-//        assertEquals("title", patronController.titleColumn.getCellValueFactory().toString());
-//        assertEquals("publisher", patronController.publisherColumn.getCellValueFactory().toString());
-//        assertEquals("genre", patronController.genreColumn.getCellValueFactory().toString());
-//        assertEquals("isbn", patronController.isbnColumn.getCellValueFactory().toString());
-//        assertEquals("isbn", patronController.reservationLinkColumn.getCellValueFactory().toString());
-//    }
-
-
     public void registerUser() {
         authController.usernameField = new TextField();
         authController.phoneField = new TextField();

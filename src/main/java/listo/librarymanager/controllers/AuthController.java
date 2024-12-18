@@ -6,6 +6,7 @@ import listo.librarymanager.models.Patron;
 import listo.librarymanager.models.Staff;
 import listo.librarymanager.utils.NavigationManager;
 import listo.librarymanager.utils.SessionManager;
+import lombok.Generated;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.Connection;
@@ -144,6 +145,7 @@ public class AuthController {
      * Navigates to the Patron registration page.
      */
     @FXML
+    @Generated
     public void onNavigateToPatronRegisterClick() {
         try {
             NavigationManager.navigateTo("/listo/librarymanager/patron-register.fxml");
@@ -156,6 +158,7 @@ public class AuthController {
      * Navigates to the Patron login page.
      */
     @FXML
+    @Generated
     public void onNavigateToPatronLoginClick() {
         try {
             NavigationManager.navigateTo("/listo/librarymanager/patron-login.fxml");
@@ -168,6 +171,7 @@ public class AuthController {
      * Navigates to the Staff login page.
      */
     @FXML
+    @Generated
     public void onNavigateToStaffLoginClick() {
         try {
             NavigationManager.navigateTo("/listo/librarymanager/staff-login.fxml");
@@ -180,6 +184,7 @@ public class AuthController {
      * Navigates to the Patron dashboard page after successful login.
      */
     @FXML
+    @Generated
     private void navigateToPatronDashboard() {
         try {
             NavigationManager.navigateTo("/listo/librarymanager/patron-dashboard.fxml");
@@ -193,6 +198,7 @@ public class AuthController {
      * Navigates to the Staff dashboard page after successful login.
      */
     @FXML
+    @Generated
     private void navigateToStaffDashboard() {
         try {
             NavigationManager.navigateTo("/listo/librarymanager/staff-dashboard.fxml");

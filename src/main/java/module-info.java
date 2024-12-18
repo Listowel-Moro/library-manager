@@ -9,6 +9,8 @@ module listo.librarymanager {
     requires java.sql;
     requires jbcrypt;
     requires java.desktop;
+    requires java.compiler;
+    requires static lombok;
 
     opens listo.librarymanager to javafx.fxml;
     opens listo.librarymanager.controllers to javafx.fxml;

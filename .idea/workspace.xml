@@ -5,24 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="21f5cc14-b099-4128-b2bd-1d1605f7e879" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mvnw" beforeDir="false" afterPath="$PROJECT_DIR$/mvnw" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mvnw.cmd" beforeDir="false" afterPath="$PROJECT_DIR$/mvnw.cmd" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/listo/librarymanager/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/listo/librarymanager/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/listo/librarymanager/config/DatabaseConnection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/listo/librarymanager/config/DatabaseConnection.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/listo/librarymanager/controllers/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/listo/librarymanager/controllers/AuthController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/listo/librarymanager/controllers/PatronDashboardController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/listo/librarymanager/controllers/PatronDashboardController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/listo/librarymanager/models/Book.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/listo/librarymanager/models/Book.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/listo/librarymanager/models/Borrowing.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/listo/librarymanager/models/Borrowing.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/listo/librarymanager/models/Patron.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/listo/librarymanager/models/Patron.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/listo/librarymanager/models/Reservation.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/listo/librarymanager/models/Reservation.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/listo/librarymanager/models/Staff.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/listo/librarymanager/models/Staff.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/listo/librarymanager/models/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/listo/librarymanager/models/User.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/listo/librarymanager/utils/DatabaseInitializer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/listo/librarymanager/utils/DatabaseInitializer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/listo/librarymanager/utils/SessionManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/listo/librarymanager/utils/SessionManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/listo/librarymanager/controllers/StaffDashboardController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/listo/librarymanager/controllers/StaffDashboardController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/module-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/module-info.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/listo/librarymanager/controllers/PatronControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/listo/librarymanager/controllers/PatronControllerTest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -100,6 +89,14 @@
     "JUnit.SessionManagerTest.executor": "Debug",
     "JUnit.SessionManagerTest.noLoggedInUserShouldReturnNull.executor": "Run",
     "JUnit.SessionManagerTest.shouldReturnNullAfterClearingSession.executor": "Run",
+    "JUnit.StaffDashboardControllerTest.executor": "Run",
+    "JUnit.StaffDashboardControllerTest.testAddBookWihInvalidCopiesLeft.executor": "Run",
+    "JUnit.StaffDashboardControllerTest.testAddBookWithEmptyInputs.executor": "Run",
+    "JUnit.StaffDashboardControllerTest.testAddBookWithNoTableCreated.executor": "Run",
+    "JUnit.StaffDashboardControllerTest.testAddBookWithValidInputs.executor": "Run",
+    "JUnit.StaffDashboardControllerTest.testLoadBooksFromDatabase.executor": "Run",
+    "JUnit.StaffDashboardControllerTest.testLoadBooksFromDatabase_NoBook.executor": "Run",
+    "JUnit.StaffDashboardControllerTest.testStaffLogout.executor": "Run",
     "JUnit.StaffTest.executor": "Run",
     "JUnit.UserTest.executor": "Run",
     "Maven.library-manager [clean].executor": "Run",
@@ -135,8 +132,8 @@
       <recent name="listo.librarymanager.utils" />
     </key>
   </component>
-  <component name="RunManager" selected="JUnit.PatronControllerTest">
-    <configuration name="PatronControllerTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+  <component name="RunManager" selected="JUnit.StaffDashboardControllerTest.testAddBookWithNoTableCreated">
+    <configuration name="StaffDashboardControllerTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="library-manager" />
       <extension name="coverage">
         <pattern>
@@ -145,13 +142,13 @@
         </pattern>
       </extension>
       <option name="PACKAGE_NAME" value="listo.librarymanager.controllers" />
-      <option name="MAIN_CLASS_NAME" value="listo.librarymanager.controllers.PatronControllerTest" />
+      <option name="MAIN_CLASS_NAME" value="listo.librarymanager.controllers.StaffDashboardControllerTest" />
       <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="PatronControllerTest.testInitialize_ColumnMappings" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="StaffDashboardControllerTest.testAddBookWihInvalidCopiesLeft" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="library-manager" />
       <extension name="coverage">
         <pattern>
@@ -160,14 +157,14 @@
         </pattern>
       </extension>
       <option name="PACKAGE_NAME" value="listo.librarymanager.controllers" />
-      <option name="MAIN_CLASS_NAME" value="listo.librarymanager.controllers.PatronControllerTest" />
-      <option name="METHOD_NAME" value="testInitialize_ColumnMappings" />
+      <option name="MAIN_CLASS_NAME" value="listo.librarymanager.controllers.StaffDashboardControllerTest" />
+      <option name="METHOD_NAME" value="testAddBookWihInvalidCopiesLeft" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="PatronControllerTest.testPatronLogout" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="StaffDashboardControllerTest.testAddBookWithEmptyInputs" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="library-manager" />
       <extension name="coverage">
         <pattern>
@@ -176,14 +173,14 @@
         </pattern>
       </extension>
       <option name="PACKAGE_NAME" value="listo.librarymanager.controllers" />
-      <option name="MAIN_CLASS_NAME" value="listo.librarymanager.controllers.PatronControllerTest" />
-      <option name="METHOD_NAME" value="testPatronLogout" />
+      <option name="MAIN_CLASS_NAME" value="listo.librarymanager.controllers.StaffDashboardControllerTest" />
+      <option name="METHOD_NAME" value="testAddBookWithEmptyInputs" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="PatronControllerTest.testReserveBookWhenNoCopiesAvailable" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="StaffDashboardControllerTest.testAddBookWithNoTableCreated" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="library-manager" />
       <extension name="coverage">
         <pattern>
@@ -192,14 +189,14 @@
         </pattern>
       </extension>
       <option name="PACKAGE_NAME" value="listo.librarymanager.controllers" />
-      <option name="MAIN_CLASS_NAME" value="listo.librarymanager.controllers.PatronControllerTest" />
-      <option name="METHOD_NAME" value="testReserveBookWhenNoCopiesAvailable" />
+      <option name="MAIN_CLASS_NAME" value="listo.librarymanager.controllers.StaffDashboardControllerTest" />
+      <option name="METHOD_NAME" value="testAddBookWithNoTableCreated" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="PatronControllerTest.testReserveBookWhenSuccess" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="StaffDashboardControllerTest.testAddBookWithValidInputs" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="library-manager" />
       <extension name="coverage">
         <pattern>
@@ -208,8 +205,8 @@
         </pattern>
       </extension>
       <option name="PACKAGE_NAME" value="listo.librarymanager.controllers" />
-      <option name="MAIN_CLASS_NAME" value="listo.librarymanager.controllers.PatronControllerTest" />
-      <option name="METHOD_NAME" value="testReserveBookWhenSuccess" />
+      <option name="MAIN_CLASS_NAME" value="listo.librarymanager.controllers.StaffDashboardControllerTest" />
+      <option name="METHOD_NAME" value="testAddBookWithValidInputs" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -217,11 +214,11 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="JUnit.PatronControllerTest" />
-        <item itemvalue="JUnit.PatronControllerTest.testInitialize_ColumnMappings" />
-        <item itemvalue="JUnit.PatronControllerTest.testPatronLogout" />
-        <item itemvalue="JUnit.PatronControllerTest.testReserveBookWhenSuccess" />
-        <item itemvalue="JUnit.PatronControllerTest.testReserveBookWhenNoCopiesAvailable" />
+        <item itemvalue="JUnit.StaffDashboardControllerTest.testAddBookWithNoTableCreated" />
+        <item itemvalue="JUnit.StaffDashboardControllerTest.testAddBookWithValidInputs" />
+        <item itemvalue="JUnit.StaffDashboardControllerTest.testAddBookWithEmptyInputs" />
+        <item itemvalue="JUnit.StaffDashboardControllerTest.testAddBookWihInvalidCopiesLeft" />
+        <item itemvalue="JUnit.StaffDashboardControllerTest" />
       </list>
     </recent_temporary>
   </component>
@@ -235,6 +232,17 @@
       <updated>1731581064952</updated>
     </task>
     <servers />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/test/java/listo/librarymanager/controllers/PatronControllerTest.java</url>
+          <line>265</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/library_manager$AuthControllerTest.ic" NAME="AuthControllerTest Coverage Results" MODIFIED="1734335875676" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">

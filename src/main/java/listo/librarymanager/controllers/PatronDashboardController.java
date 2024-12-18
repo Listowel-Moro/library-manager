@@ -12,6 +12,10 @@ import listo.librarymanager.models.Patron;
 import listo.librarymanager.models.Reservation;
 import listo.librarymanager.utils.NavigationManager;
 import listo.librarymanager.utils.SessionManager;
+
+//import javax.annotation.processing.Generated;
+import lombok.Generated;
+
 import java.sql.*;
 
 
@@ -39,6 +43,7 @@ public class PatronDashboardController {
     TableColumn<Book, String> reservationLinkColumn;
     final ObservableList<Book> bookList = FXCollections.observableArrayList();
 
+    @Generated
     public void initialize() {
         currentUser = (Patron) SessionManager.getCurrentUser();
 
@@ -276,7 +281,7 @@ public class PatronDashboardController {
         searchResultsTable.setItems(filteredList);
     }
 
-    @FXML private TableView<Borrowing> borrowedBooksTable;
+    @FXML @Generated private TableView<Borrowing> borrowedBooksTable;
     @FXML private TableColumn<Borrowing, Integer> borrowingIdColumn;
     @FXML private TableColumn<Borrowing, String> borrowedBookTitleColumn, borrowedPatronNameColumn, borrowedDateColumn, dueDateColumn;
     @FXML private final  ObservableList<Borrowing> borrowedBooks = FXCollections.observableArrayList();

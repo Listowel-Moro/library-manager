@@ -12,21 +12,25 @@ import listo.librarymanager.config.DatabaseConnection;
 import listo.librarymanager.models.*;
 import listo.librarymanager.utils.NavigationManager;
 import listo.librarymanager.utils.SessionManager;
+import lombok.Generated;
+
 import java.sql.*;
 
 
 public class StaffDashboardController {
 
-    @FXML private TableView<Book> searchResultsTable;
+    @FXML
+    TableView<Book> searchResultsTable;
     @FXML private TextField searchField;
     @FXML private TableColumn<Book, String> titleColumn, publisherColumn, genreColumn, isbnColumn, copiesLeftColumn;
 
-    private final ObservableList<Book> bookList = FXCollections.observableArrayList();
+    final ObservableList<Book> bookList = FXCollections.observableArrayList();
 
     @FXML private Label accountName, accountPhone;
 
     private Staff currentUser;
 
+    @Generated
     public void initialize() {
         currentUser = (Staff) SessionManager.getCurrentUser();
         accountName.setText(currentUser.getName());
@@ -98,7 +102,7 @@ public class StaffDashboardController {
         loadPendingReservations();
     }
 
-    private void loadBooksFromDatabase() {
+    void loadBooksFromDatabase() {
         String fetchBooksQuery = "SELECT * FROM books";
         try (Connection connection = DatabaseConnection.connectDatabase();
              PreparedStatement preparedStatement = connection.prepareStatement(fetchBooksQuery);
@@ -150,15 +154,19 @@ public class StaffDashboardController {
         NavigationManager.navigateTo("/listo/librarymanager/login-navigator.fxml");
     }
 
-    @FXML private TextField titleField, publisherField, genreField, copiesLeftField, isbnField;
-    @FXML private Label messageLabel;
+    @FXML
+    TextField titleField;
+    @FXML TextField publisherField;
+    @FXML TextField genreField;
+    @FXML TextField copiesLeftField;
+    @FXML TextField isbnField;
+    @FXML Label messageLabel;
 
     @FXML
     public void onAddBookClick() {
         String title = titleField.getText();
         String publisher = publisherField.getText();
         String genre = genreField.getText();
-        //int copiesLeft = Integer.parseInt(copiesLeftField.getText());
         String isbn = isbnField.getText();
         int copiesLeft;
         try {
@@ -170,6 +178,7 @@ public class StaffDashboardController {
             }
         } catch (NumberFormatException e) {
             copiesLeft = 1;
+            showAlert(Alert.AlertType.WARNING, "Invalid Copies left", "Defaulting to 1 because copies left is invalid");
             System.out.println("Invalid input for copiesLeft. Defaulting to 1.");
         }
 
@@ -474,7 +483,7 @@ public class StaffDashboardController {
         borrowedBooksTable.setItems(filteredList);
     }
 
-    private void showAlert(Alert.AlertType alertType, String title, String message) {
+    void showAlert(Alert.AlertType alertType, String title, String message) {
         Alert alert = new Alert(alertType);
         alert.setTitle(title);
         alert.setHeaderText(null);
